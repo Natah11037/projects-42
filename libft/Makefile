@@ -13,8 +13,7 @@ MEM = \
 		ft_memcmp.c \
 		ft_memcpy.c \
 		ft_memmove.c \
-		ft_memset.c \
-		ft_putmem.c
+		ft_memset.c
 
 # char
 CHAR = \
@@ -55,8 +54,7 @@ STR = \
 		ft_substr.c \
 		ft_split.c \
 		ft_itoa.c \
-		ft_atoi.c \
-		ft_itoa_base.c
+		ft_atoi.c
 
 # file descriptor
 FD = \
