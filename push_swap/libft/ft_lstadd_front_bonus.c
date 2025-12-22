@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstadd_front_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 16:23:27 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/19 13:42:56 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/22 14:57:51 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,11 @@ void	ft_lstadd_front(t_list **lst, t_list *new)
 	}
 	else
 	{
-		new->prev = ft_lstlast((*lst));
-		ft_lstlast((*lst))->next = new;
+		new->next = (*lst);
+		new->prev = (*lst)->prev;
+		new->prev->next = new;
+		new->next->prev = new;
 		(*lst)->first_node = false;
-		new->next = *lst;
 		new->first_node = true;
 		*lst = new;
 	}
