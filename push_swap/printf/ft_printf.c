@@ -1,30 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/12 13:36:52 by nweber--          #+#    #+#             */
+/*   Updated: 2025/11/15 14:23:53 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void	ft_lstclear(t_list **lst)
+int	ft_printf(const char *s, ...)
 {
-	t_list	*ntemp;
+	int		i;
+	int		final_len;
+	va_list	args;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
+	va_start(args, s);
+	i = 0;
+	final_len = 0;
+	while (s[i] != '\0')
 	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
+		if (s[i] == '%')
+		{
+			i++;
+			final_len += next_to_percent(s[i], args);
+		}
+		else
+			final_len += ft_putchar_fd(s[i], 1);
+		i++;
 	}
-	ft_lstdelone(lst, ntemp);
+	va_end(args);
+	return (final_len);
 }

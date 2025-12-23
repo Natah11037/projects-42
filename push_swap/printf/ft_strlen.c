@@ -1,30 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/10/27 12:02:40 by nweber--          #+#    #+#             */
+/*   Updated: 2025/11/15 11:34:15 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void	ft_lstclear(t_list **lst)
+size_t	ft_strlen(const char *s)
 {
-	t_list	*ntemp;
+	size_t	i;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
-	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
-	}
-	ft_lstdelone(lst, ntemp);
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
 }

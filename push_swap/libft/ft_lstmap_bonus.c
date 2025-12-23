@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstmap_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:00:55 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/19 16:34:15 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/23 11:05:24 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_list	*ft_lstmap(t_list *lst, void (*f)(int *), void (*del)(int *))
 		transfolst->next = ft_lstnew(lst->content);
 		if (transfolst == NULL)
 		{
-			ft_lstclear(&firstnode, del);
+			ft_lstclear(&firstnode);
 			return (NULL);
 		}
 		transfolst = transfolst->next;

@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/14 14:07:21 by nweber--          #+#    #+#             */
+/*   Updated: 2025/11/15 15:26:37 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void	ft_lstclear(t_list **lst)
+ssize_t	ft_putnbr_fd(int n, int fd)
 {
-	t_list	*ntemp;
+	long int	nb;
+	ssize_t		len;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
+	nb = n;
+	len = 0;
+	if (nb < 0)
 	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
+		len += write(fd, "-", 1);
+		nb = nb * -1;
 	}
-	ft_lstdelone(lst, ntemp);
+	if (nb > 9)
+		len += ft_putnbr_fd((nb / 10), fd);
+	len += ft_putchar_fd((nb % 10) + '0', fd);
+	return (len);
 }

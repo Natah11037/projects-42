@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/10/30 16:44:44 by nweber--          #+#    #+#             */
+/*   Updated: 2025/11/14 14:13:52 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-void	ft_lstclear(t_list **lst)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	t_list	*ntemp;
+	void	*fullofzero;
+	size_t	total_size;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
-	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
-	}
-	ft_lstdelone(lst, ntemp);
+	total_size = nmemb * size;
+	if (size && nmemb && nmemb > (size_t)-1 / size)
+		return (NULL);
+	fullofzero = malloc(total_size);
+	if (fullofzero == NULL)
+		return (0);
+	ft_bzero(fullofzero, total_size);
+	return (fullofzero);
 }

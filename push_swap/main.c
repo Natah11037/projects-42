@@ -1,30 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/12/17 15:16:55 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/12/23 12:48:42 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "push_swap.h"
 
-void	ft_lstclear(t_list **lst)
+int	main(int ac, char **av)
 {
-	t_list	*ntemp;
+	int	sing_or_mul;
+	int	strat_selec;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
-	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
-	}
-	ft_lstdelone(lst, ntemp);
+	sing_or_mul = 0;
+	strat_selec = 0;
+	all_verifs(av, ac, &strat_selec, &sing_or_mul);
+	push_swap(av, strat_selec, sing_or_mul);
+	return (0);
 }

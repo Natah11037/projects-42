@@ -1,30 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*   ft_intlen_base.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/10 11:15:19 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:04:51 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/15 11:22:11 by nweber--          #+#    #+#             */
+/*   Updated: 2025/11/15 11:45:25 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "printf.h"
 
-void	ft_lstclear(t_list **lst)
+size_t	ft_intlen_base(unsigned long n, size_t base_len)
 {
-	t_list	*ntemp;
+	size_t			ln;
+	unsigned long	tempn;
 
-	if (lst == NULL)
-		return ;
-	if ((*lst)->first_node)
-		(*lst) = (*lst)->next;
-	while (!(*lst)->first_node)
+	tempn = n;
+	ln = 0;
+	if (tempn == 0)
+		return (1);
+	while (tempn >= base_len)
 	{
-		ntemp = (*lst)->next;
-		ft_lstdelone(lst, ntemp);
-		(*lst) = ntemp;
+		tempn = tempn / base_len;
+		++ln;
 	}
-	ft_lstdelone(lst, ntemp);
+	if (ln > 0)
+		++ln;
+	if (ln == 0)
+		return (1);
+	return (ln);
 }
