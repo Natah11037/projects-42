@@ -52,7 +52,8 @@ SRCS = \
 		$(SCHAR) \
 		$(STR) \
 		$(MEM) \
-		$(FD) 
+		$(FD) \
+		$(BONUS)
 
 BONUS = \
 		ft_lstnew_bonus.c \
