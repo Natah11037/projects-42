@@ -6,39 +6,39 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 12:58:12 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/29 13:40:28 by nweber--         ###   ########.fr       */
+/*   Updated: 2025/12/29 14:40:36 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static void	flags_verif(int	*i, int	*strat_selec, char **arguments)
+static void	flags_verif(int	*i, int	*sel, char **av)
 {
 	int	flags_to_check;
 	int	max_turns;
 
 	flags_to_check = 1;
 	max_turns = 2;
-	while (flags_to_check != *strat_selec)
+	while (flags_to_check != *sel)
 	{
-		flags_to_check = *strat_selec;
-		if (!arguments[*i + 1] || max_turns == 0)
+		flags_to_check = *sel;
+		if (!av[*i + 1] || max_turns == 0)
 			break ;
-		if (!ft_strcmp(arguments[*i], "--simple"))
-			*strat_selec = 1;
-		else if (!ft_strcmp(arguments[*i], "--medium"))
-			*strat_selec = 2;
-		else if (!ft_strcmp(arguments[*i], "--complex"))
-			*strat_selec = 3;
-		else if (!ft_strcmp(arguments[*i], "--adaptive"))
-			*strat_selec = 4;
-		else if (!ft_strcmp(arguments[*i], "--bench"))
-			*strat_selec += 10;
-		if (flags_to_check != *strat_selec)
+		if (!ft_strcmp(av[*i], "--simple") && (*sel == 0 || *sel == 10))
+			*sel += 1;
+		else if (!ft_strcmp(av[*i], "--medium") && (*sel == 0 || *sel == 10))
+			*sel += 2;
+		else if (!ft_strcmp(av[*i], "--complex") && (*sel == 0 || *sel == 10))
+			*sel += 3;
+		else if (!ft_strcmp(av[*i], "--adaptive") && (*sel == 0 || *sel == 10))
+			*sel += 4;
+		else if (!ft_strcmp(av[*i], "--bench") && (*sel < 10))
+			*sel += 10;
+		if (flags_to_check != *sel)
 			*i = *i + 1;
 		max_turns--;
 	}
-	verif_strat_selec(strat_selec);
+	verif_strat_selec(sel);
 }
 
 static void	list_verif(char **arguments, int *args_i, int *sing_or_mul)
@@ -97,7 +97,7 @@ void	dup_verif(t_list **stack_a, char *ints, int sing_or_mul)
 		while (!current->first_node)
 		{
 			if (current->content == potential_dup)
-				clear_after_init(stack_a, ints, sing_or_mul);
+				clear_after_init(stack_a, ints, sing_or_mul, 0);
 			current = current->next;
 		}
 		while (current->prev->content != potential_dup)

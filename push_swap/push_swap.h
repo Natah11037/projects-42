@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 14:07:51 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/29 00:57:05 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/29 14:39:58 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ void		copying_in_single_string(char **arguments, char *unsplitted,
 char		*ft_unsplit(char **arguments, int strat_selec);
 void		stack_initializer(t_list **stack_a, char **ints,
 				char *original_ints, int sing_or_mul);
-void		clear_after_init(t_list **stack_a, char *ints, int sing_or_mul);
+void		clear_after_init(t_list **stack_a, char *ints, int sing_or_mul,
+				bool from_disorder_zero);
 void		clear_within_init(t_list **stack_a, char *original_ints,
 				int sing_or_mul, char **splitted_ints);
 void		dup_verif(t_list **stack_a, char *ints, int sing_or_mul);

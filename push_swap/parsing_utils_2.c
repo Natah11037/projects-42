@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils_2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/28 22:39:58 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/29 00:57:22 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/29 14:39:26 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,24 +37,24 @@ void	copying_in_single_string(char **arguments, char *unsplitted,
 	}
 }
 
-void	clear_after_init(t_list **stack_a, char *ints, int sing_or_mul)
+void	clear_after_init(t_list **stack_a, char *ints, int sing_or_mul,
+	bool from_disorder_zero)
 {
 	ft_lstclear(stack_a);
 	if (sing_or_mul)
 		free(ints);
-	print_error();
+	if (!from_disorder_zero)
+		print_error();
 }
 
 void	clear_within_init(t_list **stack_a, char *original_ints,
 	int sing_or_mul, char **splitted_ints)
 {
-	ft_lstclear(stack_a);
+	if (*stack_a)
+		ft_lstclear(stack_a);
+	if (splitted_ints)
+		ft_freeall(splitted_ints, ft_dstrlen(splitted_ints));
 	if (sing_or_mul)
-	{
-		if (splitted_ints)
-			ft_freeall(splitted_ints, ft_dstrlen(splitted_ints));
-		if (original_ints)
-			free(original_ints);
-	}
+		free(original_ints);
 	print_error();
 }

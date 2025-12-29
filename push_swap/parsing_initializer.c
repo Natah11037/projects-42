@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_initializer.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:12:16 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/29 00:57:14 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/29 14:53:18 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ void	stack_initializer(t_list **stack_a, char **ints,
 	}
 	ft_freeall(ints, ft_dstrlen(ints));
 	if ((*stack_a)->next == (*stack_a))
-		clear_within_init(stack_a, original_ints, sing_or_mul,
-			ints);
+		clear_after_init(stack_a, original_ints, sing_or_mul,
+			0);
 }
 
 void	data_initializer(t_data *data)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:30:38 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/28 23:30:31 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/29 14:40:08 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	push_swap(char **av, int strat_selec, int sing_or_mul)
 	data.strat_selec = strat_selec;
 	if (data.disorder == 0)
 	{
-		ft_lstclear(&stack_a);
+		clear_after_init(&stack_a, ints, sing_or_mul, 1);
 		exit (0);
 	}
 	algorithm_execution(&stack_a, &stack_b, &data);
