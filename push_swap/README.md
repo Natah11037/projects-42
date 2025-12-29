@@ -21,7 +21,25 @@
 /*          FT_INSTRUCTION          */
 /************************************/
 {
-    to compil and create an executable you need to do the command make;
-    to create a random list of numbers sort in a random disorder you can make the command : shuf -i 0-500 -n 500 > [nom du fichier]
-    then do the command : ./push_swap [you can put flag here like --simple --medium --complex or --adaptative] $(cat [nom du fichier])
+    to compile and create an executable you need to do the command make. [if you want to compil again do make re, for clean do make fclean];
+    to create a random list of numbers sort in a random disorder you can make the command : shuf -i 0-500 -n 500 > [folder name]
+    then do the command : ./push_swap [you can put flag here like --simple --medium --complex or --adaptative and you can add --bench] $(cat [folder name])
+    or you can just put yourself the list of numbers you want, doing :
+    ./push_swap [same things with the flags than before] [numbers you want for exemple : 1 3 2 6 5 4];
+}
+
+/************************************/
+/*           FT_RESOURCES           */
+/************************************/
+{
+    we only check forums for the Makefile, the rest was made by ourselves following some advices given by some other student of the 42 campus at Mulhouse.
+    AI was used for a better understanding of the chained list.
+}
+
+/************************************/
+/*          FT_EXPLANATION          */
+/************************************/
+{
+    why we used this algorithms in particulary
+    the algorithms seemed interessant and cool to understand, this algorithms was also said to be very good with lower number of operations. so we tested it and it was nice.
 }
