@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/27 12:02:40 by nweber--          #+#    #+#             */
-/*   Updated: 2025/11/15 11:34:15 by nweber--         ###   ########.fr       */
+/*   Created: 2025/10/27 12:14:17 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/11/14 15:43:35 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,6 @@ size_t	ft_strlen(const char *s)
 
 	i = 0;
 	while (s[i] != '\0')
-		i++;
+		++i;
 	return (i);
 }

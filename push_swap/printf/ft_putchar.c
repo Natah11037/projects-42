@@ -1,31 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/14 14:07:21 by nweber--          #+#    #+#             */
-/*   Updated: 2025/11/15 15:26:37 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/05 15:54:58 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/11/14 19:49:04 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-ssize_t	ft_putnbr_fd(int n, int fd)
+int	ft_putchar(char c)
 {
-	long int	nb;
-	ssize_t		len;
+	int	i;
 
-	nb = n;
-	len = 0;
-	if (nb < 0)
-	{
-		len += write(fd, "-", 1);
-		nb = nb * -1;
-	}
-	if (nb > 9)
-		len += ft_putnbr_fd((nb / 10), fd);
-	len += ft_putchar_fd((nb % 10) + '0', fd);
-	return (len);
+	i = write(1, &c, 1);
+	return (i);
 }

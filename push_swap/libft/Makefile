@@ -52,8 +52,7 @@ SRCS = \
 		$(SCHAR) \
 		$(STR) \
 		$(MEM) \
-		$(FD) \
-		$(BONUS)
+		$(FD) 
 
 BONUS = \
 		ft_lstnew_bonus.c \
@@ -77,7 +76,7 @@ BON_OBJS = $(BONUS:%.c=$(OB_DIR)/%.o)
 #Rules
 
 #Execute la compilation
-all: $(NAME)
+all: $(NAME) bonus
 
 $(NAME) : $(OBJECTS)
 	ar -rcs $(NAME) $(OBJECTS)

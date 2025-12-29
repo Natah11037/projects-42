@@ -1,22 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/14 14:02:52 by nweber--          #+#    #+#             */
-/*   Updated: 2025/11/15 14:24:17 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/05 16:30:16 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/11/14 19:50:45 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_putchar_fd(char c, int fd)
+int	ft_putstr(char *s)
 {
 	int	i;
+	int	printed_chrs;
 
+	printed_chrs = 0;
 	i = 0;
-	i = write(fd, &c, 1);
-	return (i);
+	if (s == NULL)
+	{
+		printed_chrs += write(1, "(null)", 6);
+		return (printed_chrs);
+	}
+	while (s[i] != '\0')
+	{
+		printed_chrs += write(1, &s[i], 1);
+		++i;
+	}
+	return (printed_chrs);
 }

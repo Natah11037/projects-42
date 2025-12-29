@@ -1,29 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/31 14:14:07 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/25 11:36:40 by cyakisan         ###   ########.fr       */
+/*   Created: 2025/11/05 16:34:00 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/11/14 19:52:46 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+void	ft_putnbr(int n, int *printed_ints)
 {
-	char			*joined;
-	size_t			lfullstr;
-
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
-	lfullstr = ft_strlen(s1) + ft_strlen(s2) + 1;
-	joined = ft_calloc(lfullstr, sizeof (char));
-	if (joined == NULL)
-		return (NULL);
-	ft_strlcpy(joined, s1, lfullstr);
-	ft_strlcat(joined, s2, lfullstr);
-	return (joined);
+	if (n == -2147483648)
+	{
+		*printed_ints += write(1, "-2147483648", 11);
+		return ;
+	}
+	if (n < 0)
+	{
+		n = n * -1;
+		*printed_ints += write(1, "-", 1);
+	}
+	if (n >= 0 && n < 10)
+		*printed_ints += ft_putchar(n + '0');
+	else
+	{
+		ft_putnbr(n / 10, printed_ints);
+		ft_putnbr(n % 10, printed_ints);
+	}
 }

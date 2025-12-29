@@ -3,56 +3,62 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:30:38 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 13:07:35 by nweber--         ###   ########.fr       */
+/*   Updated: 2025/12/28 23:30:31 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void print_list(t_list **stack_a)
+static void	based_on_disorder(t_list **stack_a, t_list **stack_b,
+		t_data *data)
 {
-	size_t len_stack_a;
-	len_stack_a = ft_lstsize(*stack_a);
-	while (len_stack_a > 0)
-	{
-		ft_printf("%d\n", (*stack_a)->content);
-		(*stack_a) = (*stack_a)->next;
-		len_stack_a--;
-	}
+	if (data->disorder < (double) 0.20)
+		insertion_sort(stack_a, stack_b, data);
+	else if (data->disorder < (double) 0.50)
+		chunk_sort(stack_a, stack_b, data);
+	else
+		radix_sort(stack_a, stack_b, data);
 }
 
-// static void	algorithm_execution(t_list **stack_a, t_list **stack_b,
-// 		t_data *data, char *ops)
-// {
-// 	if (data->strat_selec == 1 || data->strat_selec == 11)
-// 		// ALGO SIMPLE
-// 	// else if (data->strat_selec == 2 || data->strat_selec == 12)
-// 	// 	// ALGO MEDIUM
-// 	// else if (data->strat_selec == 3 || data->strat_selec == 13)
-// 	// 	// ALGO COMPLEX
-// 	// else
-// 	// 	based_on_disorder();
-// 	if (data->strat_selec >= 10)
-// 		print_bench(data);
-// 	// else
-// 	// 	print_ops();
-// }
+static void	algorithm_execution(t_list **stack_a, t_list **stack_b,
+		t_data *data)
+{
+	if (data->strat_selec == 1 || data->strat_selec == 11)
+		insertion_sort(stack_a, stack_b, data);
+	else if (data->strat_selec == 2 || data->strat_selec == 12)
+		chunk_sort(stack_a, stack_b, data);
+	else if (data->strat_selec == 3 || data->strat_selec == 13)
+		radix_sort(stack_a, stack_b, data);
+	else
+		based_on_disorder(stack_a, stack_b, data);
+	if (data->strat_selec >= 10)
+		print_bench(data);
+	else
+		ft_printf("%s", data->ops);
+	ft_lstclear(stack_a);
+	free(data->ops);
+}
 
 void	push_swap(char **av, int strat_selec, int sing_or_mul)
 {
 	t_list	*stack_a;
-	t_list	*stack_b; 
+	t_list	*stack_b;
 	t_data	data;
-	char	*ops;
+	char	*ints;
 
 	stack_a = NULL;
 	stack_b = NULL;
-	ops = NULL;
-	stack_initializer(&stack_a, av, strat_selec, sing_or_mul);
+	if (sing_or_mul)
+		ints = ft_unsplit(av, strat_selec);
+	else
+		ints = av[ft_dstrlen(av)];
+	stack_initializer(&stack_a, ft_split(ints, ' '), ints, sing_or_mul);
+	dup_verif(&stack_a, ints, sing_or_mul);
 	data_initializer(&data);
+	list_normalizer(stack_a);
 	data.disorder = extract_disorder(stack_a);
 	data.strat_selec = strat_selec;
 	if (data.disorder == 0)
@@ -60,11 +66,7 @@ void	push_swap(char **av, int strat_selec, int sing_or_mul)
 		ft_lstclear(&stack_a);
 		exit (0);
 	}
-	// algorithm_execution(&stack_a, &stack_b, &data, ops);
-	reverse_rotate_stack(&stack_a);
-	print_list(&stack_a);
-	
-	// ft_lstclear(&stack_a);
-	// ft_lstclear(&stack_b);
-	// free(ops);
+	algorithm_execution(&stack_a, &stack_b, &data);
+	if (sing_or_mul)
+		free(ints);
 }

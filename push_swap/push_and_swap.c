@@ -6,7 +6,7 @@
 /*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 21:51:38 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/22 21:53:27 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/25 22:14:43 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ void	push(t_list **stack_a, t_list **stack_b)
 	if (!stack_a || !*stack_a || !stack_b)
 		return ;
 	if (!*stack_b)
-		*stack_b = ft_lstnew((*stack_a)->content);
+		*stack_b = ft_lstnew((*stack_a)->content, (*stack_a)->placement);
 	else
-		ft_lstadd_front(stack_b, ft_lstnew((*stack_a)->content));
+		ft_lstadd_front(stack_b, ft_lstnew((*stack_a)->content,
+				(*stack_a)->placement));
 	ft_lstdelone(stack_a, *stack_a);
 }
 

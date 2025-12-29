@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 15:46:57 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/22 13:24:49 by nweber--         ###   ########.fr       */
+/*   Updated: 2025/12/25 22:10:41 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-t_list	*ft_lstnew(int content)
+t_list	*ft_lstnew(int content, size_t placement)
 {
 	t_list	*newlst;
 
@@ -22,6 +22,7 @@ t_list	*ft_lstnew(int content)
 	newlst->content = content;
 	newlst->next = newlst;
 	newlst->prev = newlst;
-	newlst->first_node = false;
+	newlst->first_node = true;
+	newlst->placement = placement;
 	return (newlst);
 }

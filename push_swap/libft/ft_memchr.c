@@ -6,7 +6,7 @@
 /*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/29 13:19:14 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/10/29 14:28:08 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/22 13:54:52 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	*ft_memchr(const void *s, int c, size_t n)
 	while (i < n)
 	{
 		if ((unsigned char) c == ((unsigned char *) s)[i])
-			return ((void *) &s[i]);
+			return ((void *) s + i);
 		++i;
 	}
 	return (NULL);

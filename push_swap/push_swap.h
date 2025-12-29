@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 14:07:51 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 10:35:24 by nweber--         ###   ########.fr       */
+/*   Updated: 2025/12/29 00:57:05 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,33 @@ typedef struct s_data
 	int		rrb;
 	int		rrr;
 	int		strat_selec;
+	char	*ops;
 }			t_data;
 
 void		verif_strat_selec(int *strat_selec);
 int			ft_strcmp(char *s1, char *s2);
-long int	ft_long_atoi(const char *nptr, int *int_i, int *sing_or_mul);
+long int	ft_long_atoi(const char *nptr, int *int_i);
+size_t		ft_dstrlen(char	**dstr);
+void		ft_freeall(char **splitted, int j);
 void		print_error(void);
-int			single_int_verif(int *sing_or_mul, int *args_i, char **arguments);
-int			dup_verif_sc(int int_i, char **arguments,
-				long int result, int *sng_or_m);
-int			integers_verif_sc(char **arguments, int *args_i, int *s_o_m);
-int			all_verifs(char **arguments, int ac, int *strat_selec,
+void		all_verifs(char **arguments, int ac, int *strat_selec,
 				int *sing_or_mul);
-void		stack_initializer(t_list **stack_a, char **av, int stra_slc,
-				int s_o_m);
+int			pass_flags(int strat_selec, int s_o_m);
+void		copying_in_single_string(char **arguments, char *unsplitted,
+				unsigned int k, int strat_selec);
+char		*ft_unsplit(char **arguments, int strat_selec);
+void		stack_initializer(t_list **stack_a, char **ints,
+				char *original_ints, int sing_or_mul);
+void		clear_after_init(t_list **stack_a, char *ints, int sing_or_mul);
+void		clear_within_init(t_list **stack_a, char *original_ints,
+				int sing_or_mul, char **splitted_ints);
+void		dup_verif(t_list **stack_a, char *ints, int sing_or_mul);
 void		data_initializer(t_data *data);
+void		list_normalizer(t_list *stack);
+int			search_for_max(t_list *stack);
+size_t		max_placement(t_list *stack);
+size_t		min_placement(t_list **stack);
+size_t		search_placement(t_list *stack, size_t placement);
 double		extract_disorder(t_list *stack_a);
 void		push(t_list **stack_a, t_list **stack_b);
 void		swap(t_list **stack);
@@ -57,10 +69,14 @@ void		rotate_stack(t_list **stack);
 void		rotate_both(t_list **stack_a, t_list **stack_b);
 void		reverse_rotate_both(t_list **stack_a, t_list **stack_b);
 void		reverse_rotate_stack(t_list **stack);
-void		push_swap(char **av, int strat_selec, int sing_or_mul);
+char		*ft_strnjoin(char *s1, char const *s2, unsigned int keep_index);
 void		print_bench(t_data *data);
-void 		print_list(t_list **stack_a);
+void		insertion_sort(t_list **stack_a, t_list **stack_b,
+				t_data *data);
+void		chunk_sort(t_list **stack_a, t_list **stack_b,
+				t_data *data);
+void		radix_sort(t_list **stack_a, t_list **stack_b,
+				t_data *data);
+void		push_swap(char **av, int strat_selec, int sing_or_mul);
 
-// METTRE TOUTES LES FONCTIONS EN STATIQUE
-// NE PAS OUBLIER DE D'ENLEVER TOUTES LES MAINS ET FONCTIONS DE TESTS ET LES INCLUDES
 #endif 

@@ -1,4 +1,3 @@
-
 # Nom de l'exécutable
 NAME = push_swap
 
@@ -10,7 +9,7 @@ AP = ./printf/libftprintf.a
 
 # Compilateur
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3
 
 # Sources
 OP = \
@@ -19,14 +18,26 @@ OP = \
 
 PARS = \
 	parsing_initializer.c \
-	parsing_utils.c \
 	parsing_verifs.c \
 	parsing_verifs2.c \
-	prints.c \
+	parsing_utils.c \
+	parsing_utils_2.c
+
+ALGO = \
+	insertion_sort.c \
+	chunk_sort.c \
+	radix_sort.c \
+	algorithm_utils.c
+
+EXEC = \
 	push_swap.c \
 	main.c
 
-ALL = $(OP) $(PARS)
+OUTPUT = \
+	ops_utils.c \
+	prints.c
+
+ALL = $(OP) $(PARS) $(ALGO) $(OUTPUT) $(EXEC)
 
 # Objets
 OBJS = $(ALL:%.c=$(OB_DIR)/%.o)
@@ -56,7 +67,6 @@ $(OB_DIR):
 # Nettoyage
 clean:
 	rm -rf $(OB_DIR)
-	rm -rf a.out
 	for i in $(DIR); do \
 		$(MAKE) -C $$i clean; \
 	done

@@ -3,32 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/12 13:28:08 by nweber--          #+#    #+#             */
-/*   Updated: 2025/11/15 15:27:02 by nweber--         ###   ########.fr       */
+/*   Created: 2025/11/13 14:13:52 by cyakisan          #+#    #+#             */
+/*   Updated: 2025/11/15 15:53:43 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
-# define DEC "0123456789"
-# define HEXA_MIN "0123456789abcdef"
-# define HEXA_MAX "0123456789ABCDEF"
-
 # include <stdarg.h>
 # include <unistd.h>
 # include <stdlib.h>
+# define HEX_MIN "0123456789abcdef"
+# define HEX_MAJ "0123456789ABCDEF"
+# define DEC "0123456789"
 
-int		ft_printf(const char *s, ...);
-int		next_to_percent(char c, va_list args);
-int		ft_putchar_fd(char c, int fd);
-ssize_t	ft_putnbr_fd(int n, int fd);
-int		ft_putstr_fd(char *s, int fd);
-void	*ft_calloc(size_t nmemb, size_t size);
+void	next_to_percent(const char *to_print, va_list args, int *l);
+int		ft_putchar(char c);
+int		ft_putstr(char *s);
+void	ft_putnbr(int n, int *printed_ints);
+int		ft_putadress(char *s);
 size_t	ft_strlen(const char *s);
-char	*ft_itoa_base(unsigned long n, const char *base);
 void	ft_bzero(void *s, size_t n);
-size_t	ft_intlen_base(unsigned long n, size_t base_len);
+void	*ft_calloc(size_t nmemb, size_t size);
+char	*ft_itoa_base(unsigned long n, const char *base, int iffromp);
+int		ft_printf(const char *to_print, ...);
 
 #endif

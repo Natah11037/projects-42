@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 12:01:52 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/12/23 11:11:28 by nweber--         ###   ########.fr       */
+/*   Updated: 2025/12/25 22:10:36 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ typedef struct s_list
 	int				content;
 	struct s_list	*next;
 	struct s_list	*prev;
+	size_t			placement;
 	bool			first_node;
 }				t_list;
 
@@ -59,7 +60,7 @@ int		ft_putchar_fd(char c, int fd);
 int		ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 int		ft_putnbr_fd(int n, int fd);
-t_list	*ft_lstnew(int content);
+t_list	*ft_lstnew(int content, size_t placement);
 void	ft_lstadd_front(t_list **lst, t_list *new);
 size_t	ft_lstsize(t_list *lst);
 t_list	*ft_lstlast(t_list *lst);

@@ -6,7 +6,7 @@
 /*   By: cyakisan <cyakisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 15:34:10 by cyakisan          #+#    #+#             */
-/*   Updated: 2025/11/07 13:34:19 by cyakisan         ###   ########.fr       */
+/*   Updated: 2025/12/22 13:48:50 by cyakisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,7 @@ static char	**ft_splitter(const char *s, char c, char **splitted)
 char	**ft_split(char const *s, char c)
 {
 	char				**splitted;
-	unsigned int		i;
 
-	i = 0;
 	if (s == NULL)
 		return (NULL);
 	splitted = ft_calloc(ft_count_words(s, c) + 1, sizeof(char *));
