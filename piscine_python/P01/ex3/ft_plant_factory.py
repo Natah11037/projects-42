@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+class Plant:
+    def __init__(self, name: str, height: int, age: int):
+        self.name = name.capitalize()
+        self.height = height
+        self.plant_age = age
+
+    def get_info(self):
+        print(f"Created: {self.name} ({self.height}cm, {self.plant_age} days)")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+if __name__ == "__main__":
+    total_plants = 0
+    plant_data = [
+        ("Rose", 25, 30),
+        ("Oak", 200, 365),
+        ("Cactus", 5, 90),
+        ("Sunflower", 80, 45),
+        ("Fern", 15, 120)
+    ]
+    plants = [Plant(n, h, a) for n, h, a in plant_data]
+    for p in plants:
+        p.get_info()
+    print("")
+    print("Total plants created: ", len(plants))
