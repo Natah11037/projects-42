@@ -9,14 +9,18 @@ class Plant:
     def set_height(self, height):
         if height > 0:
             self.__height = height
+            print(f"Height updated: {self.__height}cm [OK]")
         else:
-            print("The height must be a positive value")
+            print(f"Invalid operation attempted: height {self.__height}cm [REJECTED]")
+            print("Security: Negative height rejected")
 
     def set_age(self, age):
         if age > 0:
             self.__age = age
+            print(f"Age updated: {self.__age} days [OK]")
         else:
-            print("The age must be a positive value")
+            print(f"Invalid operation attempted: age {self.__age} days [REJECTED]")
+            print("Security: Negative age rejected")
 
     def get_age(self):
         return self.__age
@@ -25,8 +29,16 @@ class Plant:
         return self.__height
 
     def get_info(self):
-        print(f"Created: {self.name} ({self.height}cm, {self.plant_age} days)")
+        return (f"{self.name} ({self.__height}cm, {self.__age} days)")
 
 
 if __name__ == "__main__":
-    plant = Plant("Sunflower", 50, 147)
+    plant = Plant("Rose", 50, 240)
+    print("=== Garden Security System ===")
+    print(f"Plant created: {plant.name}")
+    plant.set_height(25)
+    plant.set_age(30)
+    print("")
+    plant.set_height(-5)
+    print("")
+    print(f"Current plant: {plant.get_info()}")
