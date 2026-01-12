@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 
 class Plant:
+    """Create a plant with a name, a height, and an age"""
+
     def __init__(self, name: str, height: int, age: int):
+        """Initialize the plant with its basic information"""
         self.name = name.capitalize()
         self.height = height
         self.plant_age = age
 
     def get_info(self):
+        """Print the plant creation information"""
         print(f"Created: {self.name} ({self.height}cm, {self.plant_age} days)")
-
-    def __str__(self):
-        return f"{self.name}"
 
 
 if __name__ == "__main__":
     total_plants = 0
+    print("=== Plant Factory Output ===")
     plant_data = [
         ("Rose", 25, 30),
         ("Oak", 200, 365),

@@ -1,40 +1,54 @@
 #!/usr/bin/env python3
 
 class Plant:
+    """Create a plant with a name, a height, and an age"""
+
     def __init__(self, name: str, height: int, age: int):
+        """Initialize the plant with its basic information"""
         self.name = name.capitalize()
         self.height = height
         self.age = age
 
     def get_info(self):
-        return (f"{self.name} ({self.__height}cm, {self.__age} days)")
+        """Return the plant name, height, and age"""
+        return f"{self.name} ({self.height}cm, {self.age} days)"
 
 
 class Flower(Plant):
+    """Create a flower with a color in addition to plant information"""
+
     def __init__(self, name: str, height: int, age: int, color: str):
+        """Initialize the flower with its basic information and color"""
         super().__init__(name, height, age)
         self.color = color
 
     def bloom(self):
-        return (f"{self.name} is blooming beautifully!")
+        """Return a message showing the flower is blooming"""
+        return f"{self.name} is blooming beautifully!"
 
     def get_info(self):
-        return (f"{self.name} (Flower): {self.height}cm, {self.age} days,"
-                f" {self.color} color")
+        """Return the flower name, height, age, and color"""
+        return (f"{self.name} (Flower): {self.height}cm, {self.age} days, "
+                f"{self.color} color")
 
 
 class Tree(Plant):
+    """Create a tree with a trunk diameter in addition to plant information"""
+
     def __init__(self, name: str, height: int, age: int, trunk_diameter: int):
+        """Initialize the tree with its basic information and trunk diameter"""
         super().__init__(name, height, age)
         self.diam = trunk_diameter
 
     def produce_shade(self):
+        """Return the amount of shade produced by the tree"""
         return (f"{self.name} provides {self.height / self.diam * 7.8}"
                 f" square meters of shade")
 
     def get_info(self):
-        return (f"{self.name} (Tree): {self.height}cm, {self.age} days,"
-                f" {self.diam}cm diameter")
+        """Return the tree name, height, age, and trunk diameter"""
+        return (f"{self.name} (Tree): {self.height}cm, {self.age} days, "
+                f"{self.diam}cm diameter")
 
 
 class Vegetable(Plant):

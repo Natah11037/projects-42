@@ -1,35 +1,43 @@
 #!/usr/bin/env python3
 
 class Plant:
+    """Create a plant with a name, a height, and an age"""
+
     def __init__(self, name: str, height: int, age: int):
+        """Initialize the plant with its basic information"""
         self.name = name.capitalize()
         self.__height = height
         self.__plant_age = age
 
     def set_height(self, height):
+        """Update the plant height if the value is valid"""
         if height > 0:
             self.__height = height
             print(f"Height updated: {self.__height}cm [OK]")
         else:
-            print(f"Invalid operation attempted: height {self.__height}cm [REJECTED]")
+            print(f"Invalid operation attempted: height {height}cm [REJECTED]")
             print("Security: Negative height rejected")
 
     def set_age(self, age):
+        """Update the plant age if the value is valid"""
         if age > 0:
             self.__age = age
             print(f"Age updated: {self.__age} days [OK]")
         else:
-            print(f"Invalid operation attempted: age {self.__age} days [REJECTED]")
+            print(f"Invalid operation attempted: age {age} days [REJECTED]")
             print("Security: Negative age rejected")
 
     def get_age(self):
+        """Return the plant age"""
         return self.__age
 
     def get_height(self):
+        """Return the plant height"""
         return self.__height
 
     def get_info(self):
-        return (f"{self.name} ({self.__height}cm, {self.__age} days)")
+        """Return the plant name, height, and age"""
+        return f"{self.name} ({self.__height}cm, {self.__age} days)"
 
 
 if __name__ == "__main__":
