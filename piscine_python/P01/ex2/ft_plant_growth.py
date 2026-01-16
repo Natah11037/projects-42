@@ -13,7 +13,7 @@ class Plant:
         """Increase the plant height by 1 cm"""
         self.height = self.height + 1
 
-    def age(self):
+    def age_one_day(self):
         """Increase the plant age by 1 day"""
         self.plant_age = self.plant_age + 1
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for _ in range(6):
         total_growth += 1
         for p in plants:
-            p.age()
+            p.age_one_day()
             p.grow()
     print("=== Day 7 ===")
     for p in plants:

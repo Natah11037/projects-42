@@ -52,6 +52,9 @@ class Tree(Plant):
 
 
 class Vegetable(Plant):
+    """Create a vegetable with a harvest season and a nutritional
+       value in addition to plant information"""
+
     def __init__(self, name: str, height: int, age: int,
                  harvest_season: str, nutritional_value: str):
         super().__init__(name, height, age)
