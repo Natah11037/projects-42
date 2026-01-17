@@ -1,6 +1,5 @@
 #!usr/bin/env python3
 
-
 def check_temperatures(temp_str: str) -> None:
     print(f"Testing temperature: {temp_str}")
     try:
@@ -18,7 +17,7 @@ def check_temperatures(temp_str: str) -> None:
 
 def test_temperature_input() -> None:
     print("=☀️ = Garden Temperature Checker =❄️ =\n")
-    for _ in range(6):
+    for _ in range(5):
         try:
             temperature: str = input("Enter a temperature: ")
             check_temperatures(temperature)
