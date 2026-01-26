@@ -31,12 +31,12 @@ if __name__ == "__main__":
     print("=== Day 1 ===")
     for p in plants:
         p.get_info()
-    for _ in range(6):
+    for _ in range(10):
         total_growth += 1
         for p in plants:
             p.age_one_day()
             p.grow()
-    print("=== Day 7 ===")
+    print(f"=== Day {total_growth + 1} ===")
     for p in plants:
         p.get_info()
     print(f"Growth this week: +{total_growth}cm")

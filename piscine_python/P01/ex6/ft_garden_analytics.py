@@ -63,7 +63,7 @@ class GardenManager:
     def height_validation(self):
         for plant in self.plants:
             if plant.height < 0:
-                return ("Height validation test: False")
+                return (f"Height validation test for {plant.name}: False")
         return ("Height validation test: True")
 
     @classmethod

@@ -1,5 +1,6 @@
 #!usr/bin/env python3
 
+
 class GardenError(Exception):
     pass
 
@@ -13,8 +14,14 @@ class WaterError(GardenError):
 
 
 class Plant:
-    def __init__(self, name: str, height: int, day_since_last_watering: int,
-                 day: int, water_in_tank: int) -> None:
+    def __init__(
+        self,
+        name: str,
+        height: int,
+        day_since_last_watering: int,
+        day: int,
+        water_in_tank: int,
+    ) -> None:
         self.name = name.title()
         self.height = height
         self.d_s_l_w = day_since_last_watering
@@ -35,7 +42,7 @@ class Plant:
             raise WaterError(
                 "\033[35mCaught WaterError: Not enough water in the"
                 " tank!🏜️\033[0m\n"
-                )
+            )
         elif self.water_in_tank > 100:
             print(f"🌱💦 {self.name} is getting watered 🌱💦\n")
             raise WaterError(

@@ -20,22 +20,22 @@ def test_error_types() -> None:
         print("Caught ZeroDivisionError0️⃣ : division by zero\n")
     print("Testing FileNotFoundError...")
     try:
-        open("mamereenslip.txt")
+        open("olala.txt")
     except FileNotFoundError:
         print("Caught FileNotFoundError📂: No such file 'missing.txt'\n")
     print("Testing KeyError...")
     try:
-        test: dict[str] = {"denouveaumamereenslip": 34364667}
-        print(test["denouveaumamereenslip2.0"])
+        test: dict[str] = {"olele": 34364667}
+        print(test["haribaaa"])
     except KeyError:
-        print("Caught KeyError🗝️ : 'missing\_plant'\n")
+        print("Caught KeyError🗝️ : 'missing_plant'\n")
     print("Testing multiple errors together...")
     try:
         int("ablabla")
         11037 / 0
-        open("mamereenslip.txt")
-        test: dict[str] = {"denouveaumamereenslip": 34364667}
-        print(test["denouveaumamereenslip2.0"])
+        open("olala.txt")
+        test: dict[str] = {"olele": 34364667}
+        print(test["haribaaa"])
     except (ValueError, ZeroDivisionError, FileNotFoundError, KeyError):
         print("Caught an error, but program continues!\n")
 
