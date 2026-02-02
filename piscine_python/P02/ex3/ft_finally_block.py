@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 def water_plants(plant_list: list[str]) -> None:
     print("Opening watering system")

@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 def check_temperatures(temp_str: str) -> None:
     print(f"Testing temperature: {temp_str}")

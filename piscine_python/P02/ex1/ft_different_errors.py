@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 
 def garden_operations() -> None:
@@ -22,13 +22,13 @@ def test_error_types() -> None:
     try:
         open("olala.txt")
     except FileNotFoundError:
-        print("Caught FileNotFoundError📂: No such file 'missing.txt'\n")
+        print("Caught FileNotFoundError📂: No such file 'olala.txt'\n")
     print("Testing KeyError...")
     try:
         test: dict[str] = {"olele": 34364667}
         print(test["haribaaa"])
     except KeyError:
-        print("Caught KeyError🗝️ : 'missing_plant'\n")
+        print("Caught KeyError🗝️ : 'haribaaa'\n")
     print("Testing multiple errors together...")
     try:
         int("ablabla")
