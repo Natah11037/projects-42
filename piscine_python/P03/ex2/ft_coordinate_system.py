@@ -34,7 +34,7 @@ def distance_between(first_co: tuple, second_co: tuple):
 def coordinates(positions: tuple, positions2: tuple):
     print(f"Position created: {positions}")
     print(f"Distance between {positions2} and {positions}:"
-          f" {distance_between(positions, positions2):.2f}")
+          f" {distance_between(positions, positions2):.2f}\n")
 
 
 if __name__ == "__main__":
@@ -57,3 +57,7 @@ if __name__ == "__main__":
         sys.exit(1)
     print(f"Parsed position: {pos}\n")
     coordinates(pos, pos2)
+    print("Unpacking demonstration:")
+    x1, x2, x3 = pos
+    print(f"Player at x={x1}, y={x2}, z={x3}")
+    print(f"Coordinates: X={x1}, Y={x2}, Z={x3}")
