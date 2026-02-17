@@ -19,7 +19,7 @@ def parsing(user_co: str) -> tuple[int, ...] | None:
         print(f"Parsing invalid coordinates: {user_co}")
         print(f"Error parsing coordinate: {e}")
         print(f"Error details - Type: {type(e).__name__}, Args: {e.args}")
-        return (None)
+        return None
     print(f'Parsing coordinates: "{user_co}"')
     return tuple(working_co)
 

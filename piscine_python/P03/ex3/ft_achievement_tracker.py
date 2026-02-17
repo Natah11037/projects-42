@@ -27,16 +27,16 @@ if __name__ == "__main__":
         kevin_achievements, gautier_achievements
     )
     print(f"Common to all players: {common_all}")
-    oulilouli = cihan_achievements.difference(
+    cihan_unique = cihan_achievements.difference(
         kevin_achievements, gautier_achievements
     )
-    ouliloulo = kevin_achievements.difference(
+    kevin_unique = kevin_achievements.difference(
         cihan_achievements, gautier_achievements
     )
-    ouliloulu = gautier_achievements.difference(
+    gautier_unique = gautier_achievements.difference(
         cihan_achievements, kevin_achievements
     )
-    rare_achievements = oulilouli.union(ouliloulo, ouliloulu)
+    rare_achievements = cihan_unique.union(kevin_unique, gautier_unique)
     print(f"Rare achievement (1 Player): {rare_achievements}\n")
     cihan_vs_kevin = cihan_achievements.intersection(kevin_achievements)
     print(f"Cihan vs Kevin common: {cihan_vs_kevin}")

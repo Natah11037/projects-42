@@ -33,7 +33,29 @@ def fibonacci_generate(nb) -> Generator[dict, None, None]:
     a = 0
     b = 1
     for i in range(nb):
-        a = a + b       
+        temp = a
+        a = a + b
+        b = temp
+        yield temp
+
+
+def prime_generate(nb) -> Generator[dict, None, None]:
+    n = 2
+    count = 0
+    while count < nb:
+        if is_prime(n):
+            yield n
+            count += 1
+        n += 1
+
+
+def is_prime(nb) -> bool:
+    if nb < 2:
+        return False
+    for i in range(2, nb):
+        if nb % i == 0:
+            return False
+    return True
 
 
 if __name__ == "__main__":
@@ -94,8 +116,10 @@ if __name__ == "__main__":
     print("Processing time: 0.045 seconds")
     print("\n=== Generator Demonstration ===")
     nb = 10
-    fibo_dict = {}
-    for i in fibonacci_generate(nb):
-        str(i)
-    fibonacci_sequence = ", ".join()
-    print(f"Fibonacci sequence (first {nb}): {}")
+    nb2 = 10
+    fibo_list = list(fibonacci_generate(nb))
+    fibonacci_sequence = ", ".join(str(n) for n in fibo_list)
+    prime_list = list(prime_generate(nb2))
+    prime_sequence = ", ".join(str(n2) for n2 in prime_list)
+    print(f"Fibonacci sequence (first {nb}): {fibonacci_sequence}")
+    print(f"Prime numbers (first {nb2}): {prime_sequence}")
