@@ -3,20 +3,20 @@
 import sys
 
 
-def score_analytics():
-    scores = sys.argv[1:]
+def score_analytics() -> str:
+    scores: list[str] = sys.argv[1:]
     if not scores:
         return ("No scores provided. Usage: python3 ft_score_analytics.py "
                 "<score1> <score2> ...")
     else:
-        scores_int = []
+        scores_int: list[int] = []
         for score in scores:
             try:
                 scores_int.append(int(score))
             except ValueError:
                 return (f"{score} is not a valid input, please consider "
                         "retrying")
-        average = sum(scores_int) / len(scores_int)
+        average: float = sum(scores_int) / len(scores_int)
         return (f"Scores processed: {scores_int}\n"
                 f"Total players: {len(scores_int)}\n"
                 f"Total score: {sum(scores_int)}\n"

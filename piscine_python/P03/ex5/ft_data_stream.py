@@ -29,9 +29,9 @@ def generator(nb_events: int) -> Generator[dict, None, None]:
         yield event
 
 
-def fibonacci_generate(nb) -> Generator[dict, None, None]:
-    a = 0
-    b = 1
+def fibonacci_generate(nb: int) -> Generator[int, None, None]:
+    a: int = 0
+    b: int = 1
     for i in range(nb):
         temp = a
         a = a + b
@@ -39,9 +39,9 @@ def fibonacci_generate(nb) -> Generator[dict, None, None]:
         yield temp
 
 
-def prime_generate(nb) -> Generator[dict, None, None]:
-    n = 2
-    count = 0
+def prime_generate(nb: int) -> Generator[int, None, None]:
+    n: int = 2
+    count: int = 0
     while count < nb:
         if is_prime(n):
             yield n
@@ -60,11 +60,11 @@ def is_prime(nb) -> bool:
 
 if __name__ == "__main__":
     print("=== Game Data Stream Processor ===\n")
-    total_events = 0
-    high_lvl_players = 0
-    stinky_weeb_events = 0
-    badluck = 0
-    noob = 0
+    total_events: int = 0
+    high_lvl_players: int = 0
+    stinky_weeb_events: int = 0
+    badluck: int = 0
+    noob: int = 0
     print("Processing 1000 game events...\n")
     for event in generator(3):
         print(event)

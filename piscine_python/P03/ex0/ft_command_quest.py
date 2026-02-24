@@ -3,10 +3,10 @@
 import sys
 
 
-def command_quest():
-    program_name = sys.argv[0]
-    arg = sys.argv[1:]
-    i = 1
+def command_quest() -> None:
+    program_name: str = sys.argv[0]
+    arg: list[str] = sys.argv[1:]
+    i: int = 1
     if not arg:
         print("No arguments provided ! (need at least 1)")
         print(f"Program name: {program_name}")

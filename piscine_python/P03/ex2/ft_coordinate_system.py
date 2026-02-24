@@ -42,19 +42,21 @@ if __name__ == "__main__":
         position = sys.argv[1]
     except IndexError:
         print('Please consider putting an arguments (example: "3,4,5")')
-        sys.exit(1)
+        sys.exit(0)
     print("=== Game Coordinate System ===\n")
     try:
         position2 = sys.argv[2]
         pos2 = parsing(position2)
+
     except IndexError:
         print("No 2nd arguments, set by default at 0 0 0")
         pos2 = (0, 0, 0)
     finally:
         print(f"Parsed position: {pos2}\n")
     pos = parsing(position)
-    if not pos:
-        sys.exit(1)
+    if not pos or not pos2:
+        print("\nNo or false argument, please retry")
+        sys.exit(0)
     print(f"Parsed position: {pos}\n")
     coordinates(pos, pos2)
     print("Unpacking demonstration:")

@@ -4,9 +4,9 @@
 import sys
 
 
-def display_inventory(inventory: dict):
+def display_inventory(inventory: dict) -> None:
     print("=== Current Inventory ===")
-    all_units = sum(inventory.values())
+    all_units: int = sum(inventory.values())
     for loot in inventory:
         if inventory[loot] > 1:
             print(
@@ -20,12 +20,12 @@ def display_inventory(inventory: dict):
             )
 
 
-def statistic_inv(inventory: dict):
+def statistic_inv(inventory: dict) -> None:
     print("\n=== Inventory Statistics ===")
-    most_item = None
-    most_quantity = 0
-    least_item = None
-    least_quantity = float("inf")
+    most_item: str | None = None
+    most_quantity: int = 0
+    least_item: str | None = None
+    least_quantity: float = float("inf")
     for item, quantity in inventory.items():
         if quantity > most_quantity:
             most_item = item
@@ -33,14 +33,18 @@ def statistic_inv(inventory: dict):
         if quantity < least_quantity:
             least_item = item
             least_quantity = quantity
-    print(f"Most abundant: {most_item} ({most_quantity})")
-    print(f"Least abundant: {least_item} ({least_quantity})")
+    if most_item is None and least_item is None:
+        print("Most abundant: None items in inventory")
+        print("Least abundant: None items in inventory")
+    else:
+        print(f"Most abundant: {most_item} ({most_quantity})")
+        print(f"Least abundant: {least_item} ({least_quantity})")
     print("\n=== Item Categories ===")
-    moderate = {}
-    scarce = {}
+    moderate: dict = {}
+    scarce: dict = {}
     for item, quantity in inventory.items():
         if quantity < 4:
-            scarce[item] = quantity
+            scarce.update({item: quantity})
         else:
             moderate[item] = quantity
     if moderate:
@@ -57,27 +61,23 @@ def statistic_inv(inventory: dict):
             "There is not any item of the rarity 'Scarce' " "in your inventory"
         )
     print("\n=== Management Suggestions ===")
-    scarce_names = list(scarce.keys())
+    scarce_names: list = list(scarce.keys())
     print(f"Restock needed: {scarce_names}")
     print("\n=== Dictionary Properties Demo ===")
-    keys_string = ", ".join(inventory.keys())
+    keys_string: str = ", ".join(inventory.keys())
     print(f"Dictionary keys: {keys_string}")
-    values_string = ", ".join(str(v) for v in inventory.values())
+    values_string: str = ", ".join(str(v) for v in inventory.values())
     print(f"Dictionary values: {values_string}")
-    kev_verif = False
-    for i in inventory.keys():
-        if (i == "Kevin_clone" or i == "Kevin_Clone" or i == "kevin_clone"
-                 or i == "kevin_Clone"):
-            kev_verif = True
-    print(f"Sample lookup - 'Kevin_clone' in inventory: {kev_verif}")
+    print(f"Sample lookup - 'Kevin_clone' in inventory: {inventory.get(
+                                                        "Kevin_clone")}")
 
 
 if __name__ == "__main__":
-    inventory = {}
+    inventory: dict = {}
     for arg in sys.argv[1:]:
-        item_args = arg.split(":")
+        item_args: list[str] = arg.split(":")
         if len(item_args) == 2:
-            item_name = item_args[0]
+            item_name: str = item_args[0]
             try:
                 quantity = int(item_args[1])
                 if quantity > 0:

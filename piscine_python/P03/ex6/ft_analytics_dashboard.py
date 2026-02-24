@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 
 
-def list_comprehension(players_info: dict) -> list:
-    list_high_scores = [
+def list_comprehension(players_info: dict) -> None:
+    list_high_scores: list = [
         name for name, data in players_info.items() if data["score"] > 2000
     ]
     print(f"High scorers (>2000): {list_high_scores}")
-    list_doubled = [data["score"] * 2 for data in players_info.values()]
+    list_doubled: list = [data["score"] * 2 for data in players_info.values()]
     print(f"Scores doubled: {list_doubled}")
-    list_active = [
+    list_active: list = [
         name for name, data in players_info.items() if data["score"] > 2500
     ]
     print(f"Active players: {list_active}")
 
 
-def dict_comprehension(players_info: dict) -> dict:
-    dict_scores = {player: data["score"] for player, data in
-                   players_info.items()}
+def dict_comprehension(players_info: dict) -> None:
+    dict_scores: dict = {player: data["score"] for player, data in
+                         players_info.items()}
     print(f"Player scores: {dict_scores}")
-    dict_scores_status = {
+    dict_scores_status: dict = {
         "high": len([data for data in players_info.values()
                      if data["score"] > 2500]),
         "medium": len([data for data in players_info.values()
@@ -27,15 +27,15 @@ def dict_comprehension(players_info: dict) -> dict:
                    if data["score"] <= 1500)
     }
     print(f"Score categories: {dict_scores_status}")
-    dict_achievements = {player: len(data["achievements"]) for player, data
-                         in players_info.items()}
+    dict_achievements: dict = {player: len(data["achievements"]) for player,
+                               data in players_info.items()}
     print(f"Achievement counts: {dict_achievements}")
 
 
-def set_comprehension(players_info: dict) -> set:
-    set_players = {name for name in players_info.keys()}
+def set_comprehension(players_info: dict) -> None:
+    set_players: set = {name for name in players_info.keys()}
     print(f"Unique players: {set_players}")
-    set_achievements = {
+    set_achievements: set = {
         achievement
         for name, data in players_info.items()
         for achievement in data["achievements"]
@@ -43,26 +43,26 @@ def set_comprehension(players_info: dict) -> set:
     print(f"Unique achievements: {set_achievements}")
 
 
-def analysis(players_info: dict) -> set:
-    total_players = len(players_info)
+def analysis(players_info: dict) -> None:
+    total_players: int = len(players_info)
     print(f"Total players: {total_players}")
-    total_achievements = len({
+    total_achievements: int = len({
         achievement
         for name, data in players_info.items()
         for achievement in data["achievements"]
         })
     print(f"Total unique achievements: {total_achievements}")
-    average_score = {data["score"] for data in
-                     players_info.values()}
-    total = 0
-    divide = 0
+    average_score: set = {data["score"] for data in
+                          players_info.values()}
+    total: int = 0
+    divide: int = 0
     for score in average_score:
         total += score
         divide += 1
-    total = total / divide
-    print(f"Average score: {total}")
-    top_performer = max(players_info, key=lambda player:
-                        players_info[player]["score"])
+    total_average: float = total / divide
+    print(f"Average score: {total_average}")
+    top_performer: str = max(players_info, key=lambda player:
+                             players_info[player]["score"])
     print(f"Top performer: {top_performer}"
           f" ({players_info[top_performer]['score']} points,"
           f" {len(players_info[top_performer]['achievements'])} achievements)")
