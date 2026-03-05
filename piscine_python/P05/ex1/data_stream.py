@@ -30,11 +30,22 @@ class SensorStream(DataStream):
             temperatures = []
             for data in data_batch:
                 if data.startswith("temp"):
-                    parts = data.split(":")
-                    save_temp = float(parts[1])
-                    if save_temp >= 50 or save_temp <= -20:
-                        temperatures.append(save_temp)
-            return (temperatures)
+                    try:
+                        parts = data.split(":")
+                        save_temp = float(parts[1])
+                        if save_temp >= 50 or save_temp <= -20:
+                            temperatures.append(data)
+                    except (ValueError, IndexError) as error:
+                        if isinstance(error, ValueError):
+                            raise ValueError("\nfilter can't be activate on a "
+                                             "list with false value")
+                        elif isinstance(error, IndexError):
+                            raise IndexError("\nfilter can't be activate on a "
+                                             " list with false value")
+            return temperatures
+        else:
+            raise TypeError("\nFilter is not activated."
+                            " To turn it on put 'Activate'")
 
     def process_batch(self, data_batch: List[Any]) -> str:
         try:
@@ -65,11 +76,22 @@ class TransactionStream(DataStream):
         if criteria == "Activate":
             large_trans = []
             for data in data_batch:
-                parts = data.split(":")
-                save_trans = float(parts[1])
-                if save_trans >= 100:
-                    large_trans.append(save_trans)
-            return (large_trans)
+                try:
+                    parts = data.split(":")
+                    save_trans = int(parts[1])
+                    if save_trans >= 100:
+                        large_trans.append(data)
+                except (ValueError, IndexError) as error:
+                    if isinstance(error, ValueError):
+                        raise ValueError("\nfilter can't be activate on a list"
+                                         " with false value")
+                    elif isinstance(error, IndexError):
+                        raise IndexError("\nfilter can't be activate on a list"
+                                         " with false value")
+            return large_trans
+        else:
+            raise TypeError("\nFilter is not activated. To turn it on put"
+                            " 'Activate'")
 
     def process_batch(self, data_batch: List[Any]) -> str:
         try:
@@ -156,15 +178,14 @@ if __name__ == "__main__":
     }
     processor.process_all(batches)
 
-    filtered_sensor = sensor_001.filter_data(list_for_sensor, "Activate")
-    filtered_transaction = trans_001.filter_data(list_for_transaction,
-                                                 "Activate")
     try:
+        filtered_sensor = sensor_001.filter_data(list_for_sensor, "Activate")
+        filtered_transaction = trans_001.filter_data(list_for_transaction,
+                                                     "Activate")
         l_sensor = len(filtered_sensor)
         l_trans = len(filtered_transaction)
-    except TypeError:
-        print("\nFilter is not activate. if you want to turn in on"
-              " put on the criteria argument 'Activate'")
+    except (ValueError, IndexError, TypeError) as error:
+        print(error)
     else:
         print("\nStream filtering active: High-priority data only")
         print(f"Filtered results: {l_sensor} "
