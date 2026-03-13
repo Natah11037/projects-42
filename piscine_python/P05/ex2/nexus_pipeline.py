@@ -5,12 +5,12 @@ from typing import Any, List, Dict, Union, Optional, Protocol  # noqa: F401
 
 
 class ProcessingStage(Protocol):
-    def process(data) -> Any:
+    def process(data: Any) -> Any:
         ...
 
 
 class InputStage():
-    def process(data) -> Dict:
+    def process(data: Any) -> Dict:
         if isinstance(data, dict):
             print(f"Input: {data}")
             return data
@@ -25,7 +25,7 @@ class InputStage():
 class TransformStage():
     nb_actions = 0
 
-    def process(data) -> Dict:
+    def process(data: Any) -> Dict:
         if isinstance(data, dict):
             save_value = data["value"]
             float(save_value)
@@ -57,7 +57,7 @@ class TransformStage():
 
 
 class OutputStage():
-    def process(data) -> str:
+    def process(data: Any) -> str:
         if isinstance(data, dict):
             return (f"Output: Processed {data["sensor"]} reading: "
                     f"{data["value"]} ({data["unit"]})")
@@ -74,7 +74,7 @@ class OutputStage():
 
 
 class ProcessingPipeline(ABC):
-    def __init__(self, pipeline_id: str):
+    def __init__(self, pipeline_id: str) -> None:
         self.pipeline_id = pipeline_id
         self.stages: list[ProcessingStage] = []
 
@@ -82,12 +82,12 @@ class ProcessingPipeline(ABC):
         self.stages.append(stage)
 
     @abstractmethod
-    def process(data) -> Any:
+    def process(self, data: Any) -> Any:
         pass
 
 
 class JSONAdapter(ProcessingPipeline):
-    def process(self, data) -> Any:
+    def process(self, data: Any) -> Any:
         result = data
         for stage in self.stages:
             result = stage.process(result)
@@ -96,7 +96,7 @@ class JSONAdapter(ProcessingPipeline):
 
 
 class CSVAdapter(ProcessingPipeline):
-    def process(self, data) -> Any:
+    def process(self, data: Any) -> Any:
         result = data
         for stage in self.stages:
             result = stage.process(result)
@@ -105,7 +105,7 @@ class CSVAdapter(ProcessingPipeline):
 
 
 class StreamAdapter(ProcessingPipeline):
-    def process(self, data) -> Any:
+    def process(self, data: Any) -> Any:
         result = data
         for stage in self.stages:
             result = stage.process(result)
@@ -114,13 +114,13 @@ class StreamAdapter(ProcessingPipeline):
 
 
 class NexusManager():
-    def __init__(self):
+    def __init__(self) -> None:
         self.pipelines: list[ProcessingPipeline] = []
 
-    def add_pipeline(self, pipeline: ProcessingPipeline):
+    def add_pipeline(self, pipeline: ProcessingPipeline) -> None:
         self.pipelines.append(pipeline)
 
-    def process_data(self, datas: list[Any]):
+    def process_data(self, datas: list[Any]) -> list:
         result = []
         for data, pipeline in zip(datas, self.pipelines):
             single_result = pipeline.process(data)
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         error_test.add_stage(OutputStage)
         error_test.process({
                 "sensor": "not a good sensor",
-                "value": "caca",
+                "value": "r",
                 "unit": "D"})
     except Exception as e:
         print(f"Error detected in stage 2: {e}")

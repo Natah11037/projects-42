@@ -5,7 +5,7 @@ from typing import Any, List, Dict, Union, Optional  # noqa: F401
 
 
 class DataStream(ABC):
-    def __init__(self, stream_id: str):
+    def __init__(self, stream_id: str) -> None:
         self.stream_id = stream_id
 
     @abstractmethod
@@ -21,7 +21,7 @@ class DataStream(ABC):
 
 
 class SensorStream(DataStream):
-    def __init__(self, stream_id):
+    def __init__(self, stream_id: str) -> None:
         super().__init__(stream_id)
 
     def filter_data(self, data_batch: list[Any], criteria:
@@ -68,7 +68,7 @@ class SensorStream(DataStream):
 
 
 class TransactionStream(DataStream):
-    def __init__(self, stream_id):
+    def __init__(self, stream_id: str) -> None:
         super().__init__(stream_id)
 
     def filter_data(self, data_batch: list[Any], criteria:
@@ -115,7 +115,7 @@ class TransactionStream(DataStream):
 
 
 class EventStream(DataStream):
-    def __init__(self, stream_id):
+    def __init__(self, stream_id: str) -> None:
         super().__init__(stream_id)
 
     def process_batch(self, data_batch: List[Any]) -> str:
@@ -131,7 +131,7 @@ class EventStream(DataStream):
 
 
 class StreamProcessor():
-    def __init__(self, streams: list[DataStream] = None):
+    def __init__(self, streams: list[DataStream] = None) -> None:
         if not streams:
             streams = []
         self.streams = streams
