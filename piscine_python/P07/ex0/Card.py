@@ -19,10 +19,3 @@ class Card(ABC):
         if available_mana >= self.cost:
             playable = True
         return (playable)
-
-
-if __name__ == "__main__":
-    rebecca = Card("Rebecca", 80, "Iconic")
-    game = {"mana": 100}
-    rebecca.play(game)
-    print(game)
