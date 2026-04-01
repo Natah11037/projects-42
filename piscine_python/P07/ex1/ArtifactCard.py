@@ -21,14 +21,14 @@ class ArtifactCard(Card):
         game_state["card_played"] = self.name
         game_state["mana_used"] = self.cost
         game_state["durability"] = self.durability
-        game_state["active effect"] = self.activate_ability().get(
-            "active_effect", None)
+        activate = self.activate_ability().get(
+                "active_effect", None)
+        game_state["active effect"] = activate
         return {
             "card_played": self.name,
             "mana_used": self.cost,
             "durability": self.durability,
-            "active effect": self.activate_ability().get(
-                "active_effect", None)
+            "active effect": activate
         }
 
     def activate_ability(self) -> dict:

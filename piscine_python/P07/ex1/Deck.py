@@ -6,6 +6,8 @@ import random
 
 
 class Deck():
+    def __init__(self):
+        pass
 
     def add_card(self, card: Card) -> None:
         try:
@@ -17,8 +19,8 @@ class Deck():
 
     def remove_card(self, card_name: str) -> bool:
         for card in self.list_card:
-            if card == card_name:
-                self.list_card.pop(card)
+            if card.name == card_name:
+                self.list_card.remove(card)
                 return True
         return False
 
@@ -33,11 +35,13 @@ class Deck():
 
     def get_deck_stats(self) -> dict:
         return {
-            "nb_card": len(self.list_card),
-            "CreatureCard": sum(1 for card in self.list_card
-                                if isinstance(card, CreatureCard)),
-            "SpellCard": sum(1 for card in self.list_card
-                             if isinstance(card, SpellCard)),
-            "ArtifactCard": sum(1 for card in self.list_card
-                                if isinstance(card, ArtifactCard))
+            "total_cards": len(self.list_card),
+            "creatures": sum(1 for card in self.list_card
+                             if isinstance(card, CreatureCard)),
+            "spells": sum(1 for card in self.list_card
+                          if isinstance(card, SpellCard)),
+            "artifacts": sum(1 for card in self.list_card
+                             if isinstance(card, ArtifactCard)),
+            "avg_cost": sum(card.cost for card in self.list_card) / len(
+                self.list_card)
         }

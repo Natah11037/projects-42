@@ -4,8 +4,6 @@ from ex1 import ArtifactCard
 from .SpellCard import SpellCard
 from .Deck import Deck
 
-import click
-
 
 def main():
     all_card = Deck()
@@ -13,7 +11,7 @@ def main():
     enemy_deck = Deck()
     game_state = {
         "player": "Natah",
-        "mana": 100
+        "mana": 1200
     }
 
     # SpellCard
@@ -25,7 +23,7 @@ def main():
         SpellCard("Burn", 15, "common", "damage"),
         SpellCard("Freeze", 30, "rare", "debuff"),
         SpellCard("Strength Boost", 25, "uncommon", "buff"),
-        SpellCard("Poison", 25, "rare", "debuff"),
+        SpellCard("Poison", 25, "rare", "damage"),
         SpellCard("Flowering", 40, "rare", "heal"),
         SpellCard("Explosion", 30, "uncommon", "damage"),
         # ArtifactCard
@@ -121,6 +119,9 @@ def main():
 
     for card in game_state["my_deck"]:
         print(card.play(game_state))
+
+    print("\nPolymorphism in action: "
+          "Same interface, different card behaviors!")
 
 
 if __name__ == "__main__":
