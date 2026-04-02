@@ -29,5 +29,5 @@ class TournamentPlatform():
             "avg_rating": (
                 sum(card.rate for card in self.cards) / len(self.cards)
                 ),
-            "platfrom_status": "active"
+            "platform_status": "active"
         }

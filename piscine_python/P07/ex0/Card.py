@@ -15,7 +15,4 @@ class Card(ABC):
         return {"name": self.name, "cost": self.cost, "rarity": self.rarity}
 
     def is_playable(self, available_mana: int) -> bool:
-        playable = False
-        if available_mana >= self.cost:
-            playable = True
-        return (playable)
+        return available_mana >= self.cost

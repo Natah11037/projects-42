@@ -23,10 +23,10 @@ class GameEngine:
         for value in card.values():
             self.card_created = self.card_created + 1
             cards_name.append(value.name)
-            dmg = sum(
-                cards.attack
-                for cards in card.values()
-                if isinstance(cards, (CreatureCard, EliteCard)))
+        dmg = sum(
+            cards.attack
+            for cards in card.values()
+            if isinstance(cards, (CreatureCard, EliteCard)))
         self.total_dmg = self.total_dmg + dmg
         return {
             "cards_played": cards_name,

@@ -9,20 +9,20 @@ class AggressiveStrategy(GameStrategy):
 
     def execute_turn(self, hand: list, battlefield: list) -> dict:
         hand.sort(key=lambda card: card.cost)
-        while self.mana - hand[0].cost > 0:
+        while hand and self.mana >= hand[0].cost:
             battlefield.append(hand[0])
             self.mana = self.mana - hand[0].cost
             hand.remove(hand[0])
-        return {
-            "hand": hand,
-            "battlefield": battlefield
-        }
+        return {"hand": hand, "battlefield": battlefield}
 
     def get_strategy_name(self) -> str:
         return "Aggressive Strategy"
 
     def prioritize_targets(self, available_targets: list) -> list:
+        tmp_lst = []
+        for card in available_targets:
+            tmp_lst.append(card)
         for card in available_targets:
             if isinstance(card, (CreatureCard, EliteCard)):
-                available_targets.remove(card)
-        return (available_targets)
+                tmp_lst.remove(card)
+        return tmp_lst

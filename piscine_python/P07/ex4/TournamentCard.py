@@ -99,7 +99,11 @@ class TournamentCard(Card, Combatable, Rankable):
         self.loose = losses + 1
 
     def get_rank_info(self) -> dict:
-        pass
+        return {
+            "win": self.win,
+            "losses": self.loose,
+            "ranking": self.rate
+        }
 
     def get_tournament_stats(self) -> dict:
         parents = [cls.__name__ for cls in self.__class__.__bases__]
