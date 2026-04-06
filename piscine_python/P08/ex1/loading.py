@@ -78,7 +78,7 @@ def run_matrix_analysis(output_file: str = "matrix_analysis.png",
 
 
 def main() -> None:
-    print("LOADING STATUS: Loading programs...\n")
+    print("\nLOADING STATUS: Loading programs...\n")
 
     print("Checking dependencies:")
     check_depedencies()
