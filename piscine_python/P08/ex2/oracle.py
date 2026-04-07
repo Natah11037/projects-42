@@ -12,7 +12,7 @@ except ImportError:
     exit(1)
 
 
-def main():
+def main() -> None:
     print("\nORACLE STATUS: Reading the Matrix...\n")
     load_dotenv()
     print("Configuration loaded:")

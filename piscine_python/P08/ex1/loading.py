@@ -1,7 +1,7 @@
 import importlib
 
 
-def check_depedencies() -> None:
+def check_dependencies() -> None:
     dep_list = ["numpy", "pandas", "matplotlib", "requests"]
     for dep in dep_list:
         try:
@@ -19,8 +19,8 @@ def check_depedencies() -> None:
 
 def run_matrix_analysis(output_file: str = "matrix_analysis.png",
                         data_points: int = 1000) -> None:
-    """Generate Matrix-like data with numpy, analyze it with pandas, and """
-    """plot it."""
+    """Generate Matrix-like data with numpy, analyze it with pandas,
+    and plot it."""
     try:
         np = importlib.import_module("numpy")
         pd = importlib.import_module("pandas")
@@ -81,7 +81,7 @@ def main() -> None:
     print("\nLOADING STATUS: Loading programs...\n")
 
     print("Checking dependencies:")
-    check_depedencies()
+    check_dependencies()
     run_matrix_analysis()
 
 
