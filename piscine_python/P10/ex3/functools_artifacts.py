@@ -38,12 +38,21 @@ def spell_dispatcher() -> Callable[[Any], str]:
         return "Unknown spell type"
 
     @cast_spell.register
-    def cast_spell(spell: int):
-        return f"Damage spell: {spell} damage"
+    def _(spell: int):
+        return f"{spell} damage"
 
     @cast_spell.register
-    def cast_spell(spell: str):
-        return f"Enchantment: {spell}"
+    def _(spell: str):
+        return spell
+
+    @cast_spell.register
+    def _(spell: list):
+        res = []
+        for s in spell:
+            res.append(cast_spell(s))
+        return res
+
+    return cast_spell
 
 
 def main():
@@ -67,6 +76,13 @@ def main():
     i = 8
     print(f"Fib({i}): {memoized_fibonacci(i)}")
     print(f"Info: {memoized_fibonacci.cache_info()}")
+
+    print("\nTesting spell dispatcher...")
+    dispatch = spell_dispatcher()
+    print(f"Damage spell: {dispatch(42)}")
+    print(f"Enchantment: {dispatch('fireball')}")
+    print(f"Multi-cast: {len(dispatch([50, 'poison', 1]))} spells")
+    print(f"{dispatch({'name': 'Natah'})}")
 
 
 if __name__ == "__main__":
