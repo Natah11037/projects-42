@@ -35,7 +35,15 @@ def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
         raise TypeError("multiplier object need to be an integer")
 
     def amplifie(*args, **kwargs):
-        return base_spell(*args, **kwargs) * multiplier
+        if "power" in kwargs:
+            kwargs["power"] *= multiplier
+        elif args:
+            args = list(args)
+            if isinstance(args[-1], int):
+                args[-1] *= multiplier
+            else:
+                raise TypeError("please put an integer for the variable power")
+        return base_spell(*args, **kwargs)
     return amplifie
 
 
@@ -92,14 +100,14 @@ def main():
 
     try:
         amplified_spell = power_amplifier(fire, 3)
+        new_power = amplified_spell(power)
+        result_amplifier = fireball(target, new_power)
     except TypeError as e:
-        print(f"\n{e}\n")
+        print(f"\nError: {e}\n")
         exit(1)
-    new_power = amplified_spell(power)
-    result_amplifier = fireball(target, new_power)
 
     print("\nTesting power amplifier...")
-    print(f"{result_amplifier} instead of {fireball('goblin', 5)}")
+    print(f"{result_amplifier} instead of {fireball(target, power)}")
 
     try:
         conditionned_spell = conditional_caster(more_than_4, fireball)

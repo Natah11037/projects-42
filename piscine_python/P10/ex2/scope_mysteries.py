@@ -14,12 +14,11 @@ def mage_counter() -> Callable:
 
 
 def spell_accumulator(initial_power: int) -> Callable:
-    power = 0
 
-    def accumulator():
-        nonlocal power
-        power += initial_power
-        return power
+    def accumulator(new_power: int):
+        nonlocal initial_power
+        initial_power += new_power
+        return initial_power
     return accumulator
 
 
@@ -47,12 +46,19 @@ def main():
         print(f"counter_a call: {counter_a()}")
     counter_b = mage_counter()
     for _ in range(2):
-        print(f"counter_a call: {counter_b()}")
+        print(f"counter_b call: {counter_b()}")
 
     print("\nTesting spell accumulator...")
-    base = spell_accumulator(20)
-    for _ in range(4):
-        print(f"Actual power: {base()}")
+    base = spell_accumulator(10)
+    data = [
+        17,
+        7,
+        4,
+        23,
+        6
+    ]
+    for i in range(len(data)):
+        print(f"Actual power: {base(data[i])}")
 
     print("\nTesting enchantment factory...")
     equipments = [

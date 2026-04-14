@@ -3,10 +3,34 @@ from functools import wraps
 import time
 
 
+def retry_spell(max_attempts: int) -> Callable:
+
+    def decorator(func: Callable):
+        @wraps(func)
+        def retry(*args, **kwargs):
+            i = 1
+            y = 1
+            while i <= max_attempts and y <= max_attempts:
+                try:
+                    res = func(*args, **kwargs)
+                    y = max_attempts
+                    y += 1
+                except Exception:
+                    print("Spell failed, retrying... "
+                          f"(attempt {i}/{max_attempts})")
+                    i += 1
+            if i - 1 == max_attempts:
+                return f"Spell casting failed after {max_attempts} attempts"
+            else:
+                return res
+        return retry
+    return decorator
+
+
 def spell_timer(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print(f"Casting {func.__name__}")
+        print(f"Casting {func.__name__}...")
         start = time.time()
         res = func(*args, **kwargs)
         end = time.time()
@@ -27,40 +51,53 @@ def power_validator(min_power: int) -> Callable:
     def decorator(func: Callable):
         @wraps(func)
         def power(*args, **kwargs):
-            if not kwargs:
-                raise SyntaxError("Please enter a key: value")
-            power = kwargs.get("power", 0)
-            if power < min_power:
-                return "Insufficient power for this spell"
+            if "power" in kwargs:
+                if kwargs["power"] < min_power:
+                    return "Insufficient power for this spell"
+            elif args:
+                if isinstance(args[-1], int):
+                    if args[-1] < min_power:
+                        return "Insufficient power for this spell"
             return func(*args, **kwargs)
         return power
     return decorator
 
 
-def retry_spell(max_attempts: int) -> Callable:
-    pass
+@retry_spell(3)
+def not_good_func():
+    raise TypeError("msg")
 
 
 class MageGuild:
     @staticmethod
     def validate_mage_name(name: str) -> bool:
-        pass
-    
-    @power_validator
+        if len(name) < 3:
+            return False
+        return all(c.isalpha() or c.isspace() for c in name)
+
+    @power_validator(10)
     def cast_spell(self, spell_name: str, power: int) -> str:
-        try:
-            return f"Succesfully cast {spell_name} with {power} power"
-        except SyntaxError as e:
-            return e
+        if isinstance(power, int) and isinstance(spell_name, str):
+            return f"Successfully cast '{spell_name}' with {power} power"
+        raise TypeError("Error: please put a spell_name: "
+                        "str variable and a power: int variable")
 
 
 def main():
-    print("\nTesting spell timer...")
+    print("Testing spell timer...")
     print(fireball())
 
-    print("\nTesting to cast a spell...")
+    print("\nTesting retry spell...")
+    print(not_good_func())
+
+    print("\nTesting MageGuild...")
     arthur = MageGuild()
-    print(arthur.cast_spell("zoubidoulala", 15))
+    print(arthur.validate_mage_name('Arthur'))
+    print(arthur.validate_mage_name("$$xX_le_sasuke_du_68_Xx$$"))
+    try:
+        print(arthur.cast_spell("arthur", 67))
+    except (SyntaxError, TypeError) as e:
+        print(e)
 
 
 if __name__ == "__main__":

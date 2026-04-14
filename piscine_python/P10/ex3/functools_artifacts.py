@@ -5,12 +5,14 @@ from operator import add, mul
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
+    if not spells:
+        return 0
     supported = {"add": add, "multiply": mul, "max": max, "min": min}
     if operation in supported:
         r = reduce(supported.get(operation), spells)
         return r
-    raise UnboundLocalError(f"Error: {operation} variable is not a supported "
-                            f"operation")
+    raise ValueError(f"Error: {operation} variable is not a supported "
+                     "operation")
 
 
 def base_enchantment(power: int, element: str, target: str) -> str:
@@ -63,8 +65,11 @@ def main():
         print(f"Product: {spell_reducer(nbr, 'multiply')}")
         print(f"Max: {spell_reducer(nbr, 'max')}")
         print(f"Min: {spell_reducer(nbr, 'min')}")
-    except UnboundLocalError as e:
+    except ValueError as e:
         print(e)
+    except TypeError:
+        print("Error: please consider putting the two argument: "
+              "spells, operation")
 
     print("\nTesting partial enchanter...")
     enchant = partial_enchanter(base_enchantment)
