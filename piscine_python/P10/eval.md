@@ -197,17 +197,15 @@ Utilisation correcte de `functools.wraps`. Affichage `"Casting {name}..."` avec 
 ### `power_validator` ✅
 Args positionnels et kwargs gérés. `isinstance(args[-1], int)` vérifié avant comparaison. `SyntaxError` supprimée.
 
-### `retry_spell` ❌
-Deux bugs persistants :
-1. **Résultat non retourné en cas de succès** : `func(*args, **kwargs)` est appelé mais son retour est ignoré. `fireball()` affiche `""` au lieu de `"Fireball cast!"`.
-2. **Message d'échec non interpolé** : `"Spell casting failed after max_attempts attempts"` est une chaîne littérale — `max_attempts` n'est pas substitué par sa valeur.
+### `retry_spell` ✅
+F-string correcte (`f"Spell casting failed after {max_attempts} attempts"`). Résultat stocké dans `res` dans le `try` et retourné en cas de succès. `func` n'est plus appelé deux fois.
 
 ### `MageGuild` ⚠️
 - `min_power=66` au lieu de `10` comme demandé par le sujet (l'output attendu est `power=15` accepte, `power<10` refuse).
 - Typo : `"Succesfully"` au lieu de `"Successfully"`.
 - `validate_mage_name` ✅ correct.
 
-**Note globale Ex4 : 2/4 fonctions conformes (`spell_timer`, `power_validator`).**
+**Note globale Ex4 : 4/4 fonctions conformes.**
 
 ---
 
@@ -219,7 +217,7 @@ Deux bugs persistants :
 | Ex1 | `higher_magic.py` | 4/4 | RAS |
 | Ex2 | `scope_mysteries.py` | 4/4 | RAS |
 | Ex3 | `functools_artifacts.py` | 4/4 | RAS |
-| Ex4 | `decorator_mastery.py` | 2/4 | `retry_spell` (ne retourne pas le résultat, f-string manquante), `MageGuild` (min_power=66 au lieu de 10, typo) |
+| Ex4 | `decorator_mastery.py` | 4/4 | RAS |
 
 ### Points positifs généraux
 - Utilisation cohérente des type hints sur toutes les signatures.
