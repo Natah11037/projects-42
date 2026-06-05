@@ -3,10 +3,10 @@ class Parser():
         self.map = map
 
     def parse(self) -> dict:
-        data = {
-            "start hub": None,
+        self.data = {
+            "start_hub": None,
             "hub": [],
-            "end hub": None,
+            "end_hub": None,
             "connections": [],
             "nb_drones": None
         }
@@ -18,7 +18,8 @@ class Parser():
                 self._parse_ligne(line, i, index)
             except ValueError as e:
                 print(e)
-                return None
+        self.parse_hub()
+        return self.data
 
     def _read_file(self):
         try:
@@ -52,3 +53,56 @@ class Parser():
             else:
                 raise ValueError("Error: First line must specify "
                                  f"number of drones on line {index}.")
+        else:
+            if line.startswith("start_hub:"):
+                self.data["start_hub"] = line.split(":")[1].strip()
+            elif line.startswith("end_hub:"):
+                self.data["end_hub"] = line.split(":")[1].strip()
+            elif line.startswith("hub:"):
+                self.data["hub"].append(line.split(":")[1].strip())
+            elif line.startswith("connection:"):
+                self.data["connections"].append(line.split(":")[1].strip())
+
+    def parse_hub(self):
+        if self.data["start_hub"]:
+            parts = self.data["start_hub"].split()
+            name = parts[0]
+            try:
+                x = int(parts[1])
+                y = int(parts[2])
+            except (ValueError, IndexError):
+                print("Error: Invalid coordinates for start hub.")
+                return
+            if parts[4]:
+                if parts[4].startswith("[color"):
+                    
+            self.data["start_hub"] = {"name": name, "x": x, "y": y}
+        if self.data["end_hub"]:
+            parts = self.data["end_hub"].split()
+            name = parts[0]
+            try:
+                x = int(parts[1])
+                y = int(parts[2])
+            except (ValueError, IndexError):
+                print("Error: Invalid coordinates for end hub.")
+                return
+            self.data["end_hub"] = {"name": name, "x": x, "y": y}
+        if self.data["hub"]:
+            parsed_hubs = []
+            for hub in self.data["hub"]:
+                parts = hub.split()
+                name = parts[0]
+                try:
+                    x = int(parts[1])
+                    y = int(parts[2])
+                except (ValueError, IndexError):
+                    print("Error: Invalid coordinates for hub.")
+                    return
+                parsed_hubs.append({"name": name, "x": x, "y": y})
+            self.data["hub"] = parsed_hubs
+
+
+if __name__ == "__main__":
+    parser = Parser("01_linear_path.txt")
+    data = parser.parse()
+    print(data)
