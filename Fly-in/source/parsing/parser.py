@@ -3,22 +3,32 @@ class Parser():
         self.map = map
 
     def parse(self) -> dict:
-        self.data = {
-            "start_hub": None,
-            "hub": [],
-            "end_hub": None,
-            "connections": [],
-            "nb_drones": None
-        }
-        valid_lines = self._read_file()
-        if valid_lines is None:
-            return None
-        for i, (index, line) in enumerate(valid_lines):
-            try:
-                self._parse_ligne(line, i, index)
-            except ValueError as e:
-                print(e)
-        self.parse_hub()
+        try:
+            self.data = {
+                "start_hub": None,
+                "hub": [],
+                "end_hub": None,
+                "connections": [],
+                "nb_drones": None,
+            }
+            valid_lines = self._read_file()
+            if valid_lines is None:
+                return None
+            for i, (index, line) in enumerate(valid_lines):
+                try:
+                    self._parse_ligne(line, i, index)
+                except ValueError as e:
+                    print(e)
+            self.parse_hub()
+            if self.data["nb_drones"] is None:
+                raise ValueError("Error: No Number of Drones detected.")
+            if self.data["start_hub"] is None:
+                raise ValueError("Error: No Start Hub detected.")
+            if self.data["end_hub"] is None:
+                raise ValueError("Error: No End Hub detected.")
+        except ValueError as e:
+            print(e)
+            exit(1)
         return self.data
 
     def _read_file(self):
@@ -49,7 +59,8 @@ class Parser():
                     else:
                         self.data["nb_drones"] = nb_drones
                 except ValueError:
-                    print(f"Error: Invalid number of drones on line {index}.")
+                    raise ValueError("Error: Invalid number of drones "
+                                     f"on line {index}.")
             else:
                 raise ValueError("Error: First line must specify "
                                  f"number of drones on line {index}.")
@@ -63,46 +74,70 @@ class Parser():
             elif line.startswith("connection:"):
                 self.data["connections"].append(line.split(":")[1].strip())
 
+    def _parse_hub_raw(self, raw: str) -> dict:
+        parts = raw.split()
+        name = parts[0]
+        try:
+            x = int(parts[1])
+            y = int(parts[2])
+        except (ValueError, IndexError):
+            raise ValueError(f"Error: Invalid coordinates for hub '{name}'.")
+        color = None
+        zone = "normal"
+        max_drones = 1
+        for part in parts[3:]:
+            part = part.strip("[]")
+            if not part:
+                continue
+            if "=" in part:
+                key, val = part.split("=")
+                if key == "color":
+                    if val.isalpha():
+                        color = val
+                    else:
+                        raise ValueError("Error: Invalid color value for "
+                                         f"hub '{name}'.")
+                elif key == "zone":
+                    if val in ["normal", "blocked", "restricted",
+                               "priority"]:
+                        zone = val
+                    else:
+                        raise ValueError("Error: Invalid zone value for "
+                                         f"hub '{name}'.")
+                elif key == "max_drones":
+                    try:
+                        max_drones = int(val)
+                    except ValueError:
+                        raise ValueError("Error: Invalid max_drones value for "
+                                         f"hub '{name}'.")
+            else:
+                raise ValueError(f"Error: Invalid metadata '{part}' for "
+                                 f"hub '{name}'.")
+        return {"name": name, "x": x, "y": y, "color": color, "zone": zone,
+                "max_drones": max_drones}
+
     def parse_hub(self):
         if self.data["start_hub"]:
-            parts = self.data["start_hub"].split()
-            name = parts[0]
-            try:
-                x = int(parts[1])
-                y = int(parts[2])
-            except (ValueError, IndexError):
-                print("Error: Invalid coordinates for start hub.")
-                return
-            if parts[4]:
-                if parts[4].startswith("[color"):
-                    
-            self.data["start_hub"] = {"name": name, "x": x, "y": y}
+            self.data["start_hub"] = self._parse_hub_raw(
+                self.data["start_hub"])
         if self.data["end_hub"]:
-            parts = self.data["end_hub"].split()
-            name = parts[0]
-            try:
-                x = int(parts[1])
-                y = int(parts[2])
-            except (ValueError, IndexError):
-                print("Error: Invalid coordinates for end hub.")
-                return
-            self.data["end_hub"] = {"name": name, "x": x, "y": y}
+            self.data["end_hub"] = self._parse_hub_raw(self.data["end_hub"])
         if self.data["hub"]:
-            parsed_hubs = []
-            for hub in self.data["hub"]:
-                parts = hub.split()
-                name = parts[0]
-                try:
-                    x = int(parts[1])
-                    y = int(parts[2])
-                except (ValueError, IndexError):
-                    print("Error: Invalid coordinates for hub.")
-                    return
-                parsed_hubs.append({"name": name, "x": x, "y": y})
-            self.data["hub"] = parsed_hubs
+            self.data["hub"] = [
+                self._parse_hub_raw(hub) for hub in self.data["hub"]
+            ]
+        names = set()
+        for hub in self.data["hub"]:
+            if hub["name"] in names:
+                raise ValueError(f"Error: Duplicate hub name '{hub['name']}'.")
+            names.add(hub["name"])
 
 
 if __name__ == "__main__":
     parser = Parser("01_linear_path.txt")
     data = parser.parse()
-    print(data)
+    print(f"Start hub: {data['start_hub']}\n"
+          f"Hubs: {data['hub']}\n"
+          f"End hub: {data['end_hub']}\n"
+          f"Connections: {data['connections']}\n"
+          f"Number of drones: {data['nb_drones']}")
