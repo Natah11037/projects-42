@@ -25,15 +25,15 @@ class Parser():
                     print(e)
                     exit(1)
             self.parse_hub()
-            self.parse_name()
-            self.parse_same_connection()
-            self.parse_connection()
             if self.data["nb_drones"] is None:
                 raise ValueError("Error: No Number of Drones detected.")
             if self.data["start_hub"] is None:
                 raise ValueError("Error: No Start Hub detected.")
             if self.data["end_hub"] is None:
                 raise ValueError("Error: No End Hub detected.")
+            self.parse_name()
+            self.parse_same_connection()
+            self.parse_connection()
         except ValueError as e:
             print(e)
             exit(1)
@@ -45,7 +45,7 @@ class Parser():
                 lines = file.readlines()
         except (FileNotFoundError, IOError):
             print(f"Error: File '{self.map}' not found or could not be read.")
-            return None
+            exit(1)
         valid_lignes = []
         for index, line in enumerate(lines, start=1):
             line = line.strip()
@@ -61,15 +61,15 @@ class Parser():
             if line.startswith("nb_drones:"):
                 try:
                     nb_drones = int(line.split(":")[1].strip())
-                    if nb_drones <= 0:
-                        raise ValueError("Error: Number of drones cannot "
-                                         "be negative or zero, "
-                                         f"line {index}.")
-                    else:
-                        self.data["nb_drones"] = nb_drones
                 except ValueError:
                     raise ValueError("Error: Invalid number of drones "
                                      f", line {index}.")
+                if nb_drones <= 0:
+                    raise ValueError("Error: Number of drones cannot "
+                                     "be negative or zero, "
+                                     f"line {index}.")
+                else:
+                    self.data["nb_drones"] = nb_drones
             else:
                 raise ValueError("Error: First line must specify "
                                  f"number of drones, line {index}.")
@@ -182,13 +182,13 @@ class Parser():
                 elif key == "max_drones":
                     try:
                         max_drones = int(val)
-                        if max_drones <= 0:
-                            raise ValueError("Error: Max drones value cannot"
-                                             " be negative or "
-                                             f"zero, line {index}.")
                     except ValueError:
                         raise ValueError("Error: Invalid max_drones value for "
                                          f"hub '{name}', line {index}.")
+                    if max_drones <= 0:
+                        raise ValueError("Error: Max drones value cannot"
+                                         " be negative or "
+                                         f"zero, line {index}.")
             else:
                 raise ValueError(f"Error: Invalid metadata '{part}' for "
                                  f"hub '{name}', line {index}.")
