@@ -14,12 +14,18 @@ class Parser():
             valid_lines = self._read_file()
             if valid_lines is None:
                 return None
+            exist_start = False
+            exist_end = False
             for i, (index, line) in enumerate(valid_lines):
                 try:
-                    self._parse_ligne(line, i, index)
+                    exist_start, exist_end = self._parse_ligne(line, i, index,
+                                                               exist_start,
+                                                               exist_end)
                 except ValueError as e:
                     print(e)
+                    exit(1)
             self.parse_hub()
+            self.parse_connection()
             if self.data["nb_drones"] is None:
                 raise ValueError("Error: No Number of Drones detected.")
             if self.data["start_hub"] is None:
@@ -47,7 +53,8 @@ class Parser():
                 valid_lignes.append((index, line))
         return valid_lignes
 
-    def _parse_ligne(self, line: str, i: int, index: int):
+    def _parse_ligne(self, line: str, i: int, index: int, exist_start: bool,
+                     exist_end: bool):
         if i == 0:
             if line.startswith("nb_drones:"):
                 try:
@@ -66,13 +73,38 @@ class Parser():
                                  f"number of drones on line {index}.")
         else:
             if line.startswith("start_hub:"):
+                if exist_start:
+                    raise ValueError("Error: Multiple start_hub definitions "
+                                     f"on line {index}.")
                 self.data["start_hub"] = line.split(":")[1].strip()
+                exist_start = True
             elif line.startswith("end_hub:"):
+                if exist_end:
+                    raise ValueError("Error: Multiple end_hub definitions "
+                                     f"on line {index}.")
                 self.data["end_hub"] = line.split(":")[1].strip()
+                exist_end = True
             elif line.startswith("hub:"):
                 self.data["hub"].append(line.split(":")[1].strip())
             elif line.startswith("connection:"):
                 self.data["connections"].append(line.split(":")[1].strip())
+        return exist_start, exist_end
+
+    def parse_connection(self):
+        for connection in self.data["connections"]:
+            parts = connection.split("-")
+            list_hub_name = []
+            for hub in self.data["hub"]:
+                list_hub_name.append(hub.get('name', False))
+            list_hub_name.append(self.data['start_hub']['name'])
+            list_hub_name.append(self.data['end_hub']['name'])
+
+            if parts[0] not in list_hub_name:
+                raise ValueError(f"Error: Invalid connection '{connection}'. "
+                                 "Both hubs must be defined in the map.")
+            if parts[1] not in list_hub_name:
+                raise ValueError(f"Error: Invalid connection '{connection}'. "
+                                 "Both hubs must be defined in the map.")
 
     def _parse_hub_raw(self, raw: str) -> dict:
         parts = raw.split()
@@ -107,6 +139,9 @@ class Parser():
                 elif key == "max_drones":
                     try:
                         max_drones = int(val)
+                        if max_drones <= 0:
+                            raise ValueError("Error: Max drones value cannot"
+                                             " be negative or zero")
                     except ValueError:
                         raise ValueError("Error: Invalid max_drones value for "
                                          f"hub '{name}'.")
