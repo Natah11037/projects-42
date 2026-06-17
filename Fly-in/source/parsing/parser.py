@@ -32,6 +32,8 @@ class Parser():
             if self.data["end_hub"] is None:
                 raise ValueError("Error: No End Hub detected.")
             self.parse_name()
+            self.parse_same_name()
+            self.same_coordinates()
             self.parse_same_connection()
             self.parse_connection()
         except ValueError as e:
@@ -98,6 +100,11 @@ class Parser():
     def parse_connection(self):
         for (index, connection) in self.data["connections"]:
             parts = connection.split("-")
+            if len(parts) != 2:
+                raise ValueError(f"Error: Invalid connection '{connection}' "
+                                 f", line {index}. "
+                                 "Connections must be in the format "
+                                 "'hub1-hub2'.")
             list_hub_name = []
             for hub in self.data["hub"]:
                 list_hub_name.append(hub.get('name', False))
@@ -112,23 +119,37 @@ class Parser():
                 raise ValueError(f"Error: Invalid connection '{connection}' "
                                  f", line {index}. "
                                  "Both hubs must be defined in the map.")
-            if parts[1] not in list_hub_name:
-                raise ValueError(f"Error: Invalid connection '{connection}' "
-                                 f", line {index}. "
-                                 "Both hubs must be defined in the map.")
         self.data["connections"] = [connection for (_, connection) in
                                     self.data["connections"]]
 
     def parse_same_connection(self):
         for i, (index, connection) in enumerate(self.data["connections"]):
-            connections = set(connection)
+            parts = set(connection.split("-"))
             for j, (index2, connection2) in enumerate(self.data["co"
                                                                 "nnections"]):
-                if i != j and connections == set(connection2):
+                if i != j and parts == set(connection2.split("-")):
                     raise ValueError("Error: Duplicate connection "
                                      f"'{connection}' "
                                      f"and '{connection2}', line {index}"
                                      f" and {index2}.")
+
+    def parse_same_name(self):
+        names = set()
+        for hub in self.data["hub"]:
+            if hub["name"] in names:
+                raise ValueError(f"Error: Duplicate hub name '{hub['name']}'"
+                                 f", line {hub['index']}.")
+            names.add(hub["name"])
+        if self.data["start_hub"]["name"] in names:
+            raise ValueError(f"Error: Duplicate hub name "
+                             f"'{self.data['start_hub']['name']}'"
+                             f", line {self.data['start_hub']['index']}.")
+        names.add(self.data["start_hub"]["name"])
+        if self.data["end_hub"]["name"] in names:
+            raise ValueError(f"Error: Duplicate hub name "
+                             f"'{self.data['end_hub']['name']}'"
+                             f", line {self.data['end_hub']['index']}.")
+        names.add(self.data["end_hub"]["name"])
 
     def parse_name(self):
         for hub in self.data["hub"]:
@@ -148,9 +169,35 @@ class Parser():
                              " Hub names cannot contain '-',"
                              f" line {self.data['end_hub']['index']}.")
 
+    def same_coordinates(self):
+        coordinates = set()
+        for hub in self.data["hub"]:
+            coord = (hub["x"], hub["y"])
+            if coord in coordinates:
+                raise ValueError("Error: Duplicate coordinates "
+                                 f"({hub['x']}, {hub['y']}) "
+                                 f"for hub '{hub['name']}', "
+                                 f"line {hub['index']}.")
+            if coord == (self.data["start_hub"]["x"],
+                         self.data["start_hub"]["y"]):
+                raise ValueError("Error: Duplicate coordinates "
+                                 f"({hub['x']}, {hub['y']}) "
+                                 f"for hub '{hub['name']}', "
+                                 f"line {hub['index']}.")
+            if coord == (self.data["end_hub"]["x"],
+                         self.data["end_hub"]["y"]):
+                raise ValueError("Error: Duplicate coordinates "
+                                 f"({hub['x']}, {hub['y']}) "
+                                 f"for hub '{hub['name']}', "
+                                 f"line {hub['index']}.")
+            coordinates.add(coord)
+
     def _parse_hub_raw(self, raw: str, index: int) -> dict:
         parts = raw.split()
         name = parts[0]
+        if raw.count('[') > 1:
+            raise ValueError("Error: Multiple metadata brackets for hub "
+                             f"'{name}', line {index}.")
         try:
             x = int(parts[1])
             y = int(parts[2])
@@ -189,6 +236,13 @@ class Parser():
                         raise ValueError("Error: Max drones value cannot"
                                          " be negative or "
                                          f"zero, line {index}.")
+                    if max_drones > self.data["nb_drones"]:
+                        raise ValueError("Error: Max drones value cannot "
+                                         "exceed the number of drones, "
+                                         f"line {index}.")
+                else:
+                    raise ValueError(f"Error: Invalid metadata key '{key}' "
+                                     f"for hub '{name}', line {index}.")
             else:
                 raise ValueError(f"Error: Invalid metadata '{part}' for "
                                  f"hub '{name}', line {index}.")
