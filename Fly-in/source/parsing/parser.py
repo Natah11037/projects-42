@@ -36,6 +36,7 @@ class Parser():
             self.same_coordinates()
             self.parse_same_connection()
             self.parse_connection()
+            self.can_reach_the_end()
         except ValueError as e:
             print(e)
             exit(1)
@@ -99,9 +100,11 @@ class Parser():
 
     def parse_connection(self):
         for (index, connection) in self.data["connections"]:
-            parts = connection.split("-")
+            clean_connection = connection.split('[')[0].strip()
+            parts = clean_connection.split("-")
             if len(parts) != 2:
-                raise ValueError(f"Error: Invalid connection '{connection}' "
+                raise ValueError("Error: Invalid "
+                                 f"connection '{clean_connection}' "
                                  f", line {index}. "
                                  "Connections must be in the format "
                                  "'hub1-hub2'.")
@@ -112,11 +115,13 @@ class Parser():
             list_hub_name.append(self.data['end_hub']['name'])
 
             if parts[0] not in list_hub_name:
-                raise ValueError(f"Error: Invalid connection '{connection}' "
+                raise ValueError("Error: Invalid "
+                                 f"connection '{clean_connection}' "
                                  f",line {index}. "
                                  "Both hubs must be defined in the map.")
             if parts[1] not in list_hub_name:
-                raise ValueError(f"Error: Invalid connection '{connection}' "
+                raise ValueError("Error: Invalid "
+                                 f"connection '{clean_connection}' "
                                  f", line {index}. "
                                  "Both hubs must be defined in the map.")
         self.data["connections"] = [connection for (_, connection) in
@@ -124,13 +129,15 @@ class Parser():
 
     def parse_same_connection(self):
         for i, (index, connection) in enumerate(self.data["connections"]):
-            parts = set(connection.split("-"))
+            clean = connection.split('[')[0].strip()
+            parts = set(clean.split("-"))
             for j, (index2, connection2) in enumerate(self.data["co"
                                                                 "nnections"]):
-                if i != j and parts == set(connection2.split("-")):
+                clean2 = connection2.split('[')[0].strip()
+                if i != j and parts == set(clean2.split("-")):
                     raise ValueError("Error: Duplicate connection "
-                                     f"'{connection}' "
-                                     f"and '{connection2}', line {index}"
+                                     f"'{clean}' "
+                                     f"and '{clean2}', line {index}"
                                      f" and {index2}.")
 
     def parse_same_name(self):
@@ -192,7 +199,8 @@ class Parser():
                                  f"line {hub['index']}.")
             coordinates.add(coord)
 
-    def _parse_hub_raw(self, raw: str, index: int) -> dict:
+    def _parse_hub_raw(self, raw: str, index: int,
+                       hub_type: str = "hub") -> dict:
         parts = raw.split()
         name = parts[0]
         if raw.count('[') > 1:
@@ -206,7 +214,8 @@ class Parser():
                              f"'{name}', line {index}.")
         color = None
         zone = "normal"
-        max_drones = 1
+        is_endpoint = hub_type in ("start", "end")
+        max_drones = self.data["nb_drones"] if is_endpoint else 1
         for part in parts[3:]:
             part = part.strip("[]")
             if not part:
@@ -252,13 +261,13 @@ class Parser():
     def parse_hub(self):
         if self.data["start_hub"]:
             index, raw = self.data["start_hub"]
-            self.data["start_hub"] = self._parse_hub_raw(raw, index)
+            self.data["start_hub"] = self._parse_hub_raw(raw, index, "start")
         if self.data["end_hub"]:
             index, raw = self.data["end_hub"]
-            self.data["end_hub"] = self._parse_hub_raw(raw, index)
+            self.data["end_hub"] = self._parse_hub_raw(raw, index, "end")
         if self.data["hub"]:
             self.data["hub"] = [
-                self._parse_hub_raw(raw, index)
+                self._parse_hub_raw(raw, index, "hub")
                 for (index, raw) in self.data["hub"]
             ]
         names = set()
@@ -268,9 +277,35 @@ class Parser():
                                  f", line {hub['index']}.")
             names.add(hub["name"])
 
+    def can_reach_the_end(self):
+        queue = [self.data["start_hub"]["name"]]
+        blocked = {hub["name"] for hub in self.data[
+            "hub"] if hub["zone"] == "blocked"}
+        end = self.data["end_hub"]["name"]
+
+        connected = set(self.data["start_hub"]["name"])
+        while queue:
+            if end in connected:
+                return True
+            current = queue[0]
+            queue.pop(0)
+            neighbors = []
+            for connection in self.data["connections"]:
+                parts = connection.split("-")
+                if current in parts:
+                    neighbor = parts[1] if parts[0] == current else parts[0]
+                    if neighbor not in blocked:
+                        neighbors.append(neighbor)
+            for neighbor in neighbors:
+                if neighbor not in connected:
+                    connected.add(neighbor)
+                    queue.append(neighbor)
+        raise ValueError("Error: The end hub is unreachable from the start "
+                         "hub.")
+
 
 if __name__ == "__main__":
-    parser = Parser("01_linear_path.txt")
+    parser = Parser("./assets/maps/easy/01_linear_path.txt")
     data = parser.parse()
     print(f"Start hub: {data['start_hub']}\n"
           f"Hubs: {data['hub']}\n"
