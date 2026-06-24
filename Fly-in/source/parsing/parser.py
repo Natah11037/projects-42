@@ -99,6 +99,7 @@ class Parser():
         return exist_start, exist_end
 
     def parse_connection(self):
+        parsed = []
         for (index, connection) in self.data["connections"]:
             clean_connection = connection.split('[')[0].strip()
             parts = clean_connection.split("-")
@@ -124,8 +125,54 @@ class Parser():
                                  f"connection '{clean_connection}' "
                                  f", line {index}. "
                                  "Both hubs must be defined in the map.")
-        self.data["connections"] = [connection for (_, connection) in
-                                    self.data["connections"]]
+            metadata = self.parse_metadata_connection(connection, index)
+            if metadata == {}:
+                metadata = {"max_link_capacity": 1}
+            parsed.append({"connection": clean_connection,
+                           "metadata": metadata})
+        self.data["connections"] = parsed
+
+    def parse_metadata_connection(self, connection: str, index: int):
+        if connection.count('[') > 1:
+            raise ValueError("Error: Multiple metadata brackets for "
+                             f"connection '{connection}', line {index}.")
+        metadata = {}
+        if '[' in connection and ']' in connection:
+            meta_str = connection.split('[')[1].split(']')[0]
+            co = connection.split('[')[0].strip()
+            parts = co.split("-")
+            if '=' in meta_str:
+                splitted_meta = meta_str.split('=')
+                if len(splitted_meta) != 2:
+                    raise ValueError("Error: Invalid metadata format for "
+                                     f"connection '{connection}', line {index}.")
+                key, val = splitted_meta
+                val = val.strip()
+                if key == "max_link_capacity":
+                    try:
+                        metadata[key] = int(val)
+                    except ValueError:
+                        raise ValueError("Error: Invalid max_link_capacity "
+                                         f"value for connection '{connection}', "
+                                         f"line {index}.")
+                    if metadata[key] < 0:
+                        raise ValueError("Error: max_link_capacity value "
+                                         "cannot be negative, "
+                                         f"line {index}.")
+                    if metadata[key] == 0:
+                        if parts[1]["zone"] != "blocked":
+                            raise ValueError("Error: max_link_capacity "
+                                             "value cannot be zero for "
+                                             f"connection '{connection}', "
+                                             f"line {index}.")
+                else:
+                    raise ValueError("Error: Invalid metadata key "
+                                     f"'{key}' for connection '{connection}', "
+                                     f"line {index}.")
+            else:
+                raise ValueError("Error: Invalid metadata format for "
+                                 f"connection '{connection}', line {index}.")
+        return metadata
 
     def parse_same_connection(self):
         for i, (index, connection) in enumerate(self.data["connections"]):
@@ -283,7 +330,7 @@ class Parser():
             "hub"] if hub["zone"] == "blocked"}
         end = self.data["end_hub"]["name"]
 
-        connected = set(self.data["start_hub"]["name"])
+        connected = {self.data["start_hub"]["name"]}
         while queue:
             if end in connected:
                 return True
@@ -291,7 +338,7 @@ class Parser():
             queue.pop(0)
             neighbors = []
             for connection in self.data["connections"]:
-                parts = connection.split("-")
+                parts = connection["connection"].split("-")
                 if current in parts:
                     neighbor = parts[1] if parts[0] == current else parts[0]
                     if neighbor not in blocked:
