@@ -36,6 +36,7 @@ class Parser():
             self.same_coordinates()
             self.parse_same_connection()
             self.parse_connection()
+            self.parse_access_to_start_and_end()
             self.can_reach_the_end()
         except ValueError as e:
             print(e)
@@ -142,10 +143,11 @@ class Parser():
             co = connection.split('[')[0].strip()
             parts = co.split("-")
             if '=' in meta_str:
-                splitted_meta = meta_str.split('=')
+                splitted_meta = meta_str.split('=', 1)
                 if len(splitted_meta) != 2:
                     raise ValueError("Error: Invalid metadata format for "
-                                     f"connection '{connection}', line {index}.")
+                                     f"connection '{connection}',"
+                                     f" line {index}.")
                 key, val = splitted_meta
                 val = val.strip()
                 if key == "max_link_capacity":
@@ -153,14 +155,21 @@ class Parser():
                         metadata[key] = int(val)
                     except ValueError:
                         raise ValueError("Error: Invalid max_link_capacity "
-                                         f"value for connection '{connection}', "
+                                         "value for connection "
+                                         f"'{connection}', "
                                          f"line {index}.")
                     if metadata[key] < 0:
                         raise ValueError("Error: max_link_capacity value "
                                          "cannot be negative, "
                                          f"line {index}.")
                     if metadata[key] == 0:
-                        if parts[1]["zone"] != "blocked":
+                        all_hubs = (self.data["hub"] +
+                                    [self.data["start_hub"],
+                                     self.data["end_hub"]])
+                        dest_zone = next(
+                            (h["zone"] for h in all_hubs
+                             if h["name"] == parts[1]), "normal")
+                        if dest_zone != "blocked":
                             raise ValueError("Error: max_link_capacity "
                                              "value cannot be zero for "
                                              f"connection '{connection}', "
@@ -259,7 +268,7 @@ class Parser():
         except (ValueError, IndexError):
             raise ValueError("Error: Invalid coordinates for hub "
                              f"'{name}', line {index}.")
-        color = None
+        color = "white"
         zone = "normal"
         is_endpoint = hub_type in ("start", "end")
         max_drones = self.data["nb_drones"] if is_endpoint else 1
@@ -268,16 +277,26 @@ class Parser():
             if not part:
                 continue
             if "=" in part:
-                key, val = part.split("=")
+                key, val = part.split("=", 1)
                 if key == "color":
-                    if val.isalpha():
-                        color = val
+                    valid_colors = {
+                        "red", "orange", "yellow", "green", "blue",
+                        "pink", "violet", "purple", "white", "black",
+                        "grey", "gray", "brown", "cyan", "magenta",
+                        "lime", "gold", "crimson", "maroon", "darkred",
+                        "rainbow", "indigo", "teal", "coral", "salmon",
+                        "beige", "turquoise", "silver"
+                    }
+                    if val.lower() in valid_colors:
+                        color = val.lower()
                     else:
-                        raise ValueError("Error: Invalid color value for "
-                                         f"hub '{name}', line {index}.")
+                        raise ValueError("Error: Invalid color value "
+                                         f"'{val}' for hub '{name}', "
+                                         f"line {index}.")
                 elif key == "zone":
                     if val in ["normal", "blocked", "restricted",
                                "priority"]:
+
                         zone = val
                     else:
                         raise ValueError("Error: Invalid zone value for "
@@ -323,6 +342,12 @@ class Parser():
                 raise ValueError(f"Error: Duplicate hub name '{hub['name']}'"
                                  f", line {hub['index']}.")
             names.add(hub["name"])
+
+    def parse_access_to_start_and_end(self):
+        if self.data["start_hub"]["zone"] == "blocked":
+            raise ValueError("Error: Start hub is in a blocked zone.")
+        if self.data["end_hub"]["zone"] == "blocked":
+            raise ValueError("Error: End hub is in a blocked zone.")
 
     def can_reach_the_end(self):
         queue = [self.data["start_hub"]["name"]]
