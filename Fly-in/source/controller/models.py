@@ -1,12 +1,15 @@
 class Zone():
-    def __init__(self, name: str, x: int, y: int, zone_type: str,
+    def __init__(self, name: str, x: int, y: int, zone: str,
                  max_drones: int, color: str):
         self.name = name
         self.x = x
         self.y = y
-        self.zone_type = zone_type
+        self.zone = zone
         self.max_drones = max_drones
         self.color = color
+
+    def __repr__(self):
+        return f"{self.name}"
 
 
 class Connection():
