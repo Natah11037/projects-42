@@ -24,9 +24,11 @@ class Graph():
         neighbors = []
         for connection in self.connections:
             if connection.zone1.name == zone.name:
-                neighbors.append(connection.zone2)
+                if connection.zone2.zone != "blocked":
+                    neighbors.append(connection.zone2)
             elif connection.zone2.name == zone.name:
-                neighbors.append(connection.zone1)
+                if connection.zone2.zone != "blocked":
+                    neighbors.append(connection.zone1)
         return neighbors
 
     def set_zones_to_inf(self):
