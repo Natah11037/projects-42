@@ -11,6 +11,15 @@ class Zone():
     def __repr__(self):
         return f"{self.name}"
 
+    def __lt__(self, other):
+        return self.name < other.name
+
+    def get_cost(self):
+        if self.zone == "restricted":
+            return 2
+        else:
+            return 1
+
 
 class Connection():
     def __init__(self, zone1: Zone, zone2: Zone, max_link_capacity: int):

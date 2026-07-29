@@ -28,3 +28,6 @@ class Graph():
             elif connection.zone2.name == zone.name:
                 neighbors.append(connection.zone1)
         return neighbors
+
+    def set_zones_to_inf(self):
+        return {zone.name: [float("inf"), []] for zone in self.zones.values()}

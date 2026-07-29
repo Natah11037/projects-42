@@ -17,10 +17,10 @@ end_hub: goal 9 0 [color=red]
 
 connection: start-waypoint1
 connection: waypoint1-waypoint2
-connection: waypoint1-waypoint3
-connection: waypoint3-waypoint5
-connection: waypoint5-waypoint7
-connection: waypoint2-waypoint4
-connection: waypoint4-waypoint6
-connection: waypoint6-waypoint8
+connection: waypoint2-waypoint3
+connection: waypoint3-waypoint4
+connection: waypoint4-waypoint5
+connection: waypoint6-waypoint7
+connection: waypoint7-waypoint8
+connection: waypoint1-waypoint7
 connection: waypoint8-goal
