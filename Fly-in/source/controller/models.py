@@ -26,3 +26,13 @@ class Connection():
         self.zone1 = zone1
         self.zone2 = zone2
         self.max_link_capacity = max_link_capacity
+
+
+class Drone():
+    def __init__(self, name: str, current_zone: Zone,
+                 path: list[Zone] | None = None):
+        self.name = name
+        self.current_zone = current_zone
+        self.path: list[Zone] = path if path is not None else []
+        self.in_transit = False
+        self.path_index = 0

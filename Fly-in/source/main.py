@@ -4,7 +4,7 @@ from .controller.pathfinder import pathfinder
 
 
 if __name__ == "__main__":
-    parsed = Parser("./assets/maps/easy/01_linear_path.txt")
+    parsed = Parser("./assets/maps/challenger/01_the_impossible_dream.txt")
     parsed.parse()
     graph = Graph(parsed.data)
     print(pathfinder(graph))
