@@ -1,4 +1,4 @@
-class Zone():
+class Zone:
     def __init__(self, name: str, x: int, y: int, zone: str,
                  max_drones: int, color: str):
         self.name = name
@@ -7,6 +7,7 @@ class Zone():
         self.zone = zone
         self.max_drones = max_drones
         self.color = color
+        self.nb_drones = 0
 
     def __repr__(self):
         return f"{self.name}"
@@ -21,14 +22,15 @@ class Zone():
             return 1
 
 
-class Connection():
+class Connection:
     def __init__(self, zone1: Zone, zone2: Zone, max_link_capacity: int):
         self.zone1 = zone1
         self.zone2 = zone2
         self.max_link_capacity = max_link_capacity
+        self.nb_drones = 0
 
 
-class Drone():
+class Drone:
     def __init__(self, name: str, current_zone: Zone,
                  path: list[Zone] | None = None):
         self.name = name

@@ -47,7 +47,7 @@ class Parser():
         try:
             with open(self.map, 'r') as file:
                 lines = file.readlines()
-        except (FileNotFoundError, IOError):
+        except (FileNotFoundError, IOError, TypeError):
             print(f"Error: File '{self.map}' not found or could not be read.")
             exit(1)
         valid_lignes = []

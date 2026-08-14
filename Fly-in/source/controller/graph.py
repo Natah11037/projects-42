@@ -4,14 +4,13 @@ from .models import Zone, Connection
 class Graph():
     def __init__(self, data: dict):
         self.data = data
-        self.start_hub = data["start_hub"]["name"]
-        self.end_hub = data["end_hub"]["name"]
-        self.all_hubs = data["hub"] + [data["start_hub"], data["end_hub"]]
         self.zones = {
             hub["name"]: Zone(**{
                 key: value for key, value in hub.items() if key != "index"})
-            for hub in self.all_hubs
+            for hub in data["hub"] + [data["start_hub"], data["end_hub"]]
         }
+        self.start_hub = self.zones[data["start_hub"]["name"]]
+        self.end_hub = self.zones[data["end_hub"]["name"]]
         self.connections = []
         for conn_data in data.get("connections", []):
             parts = conn_data["connection"].split("-")
