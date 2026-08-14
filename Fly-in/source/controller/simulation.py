@@ -22,19 +22,21 @@ class Simulation:
 
     def mooving_drones(self):
         for drone in self.drones:
-            if drone.current_zone.name != self.graph.end_hub:
-                if drone.in_transit is True:
-                    drone.in_transit = False
-                    self.cost += 1
-                    continue
+            if drone.current_zone == self.graph.end_hub:
+                continue
+            if drone.in_transit is True:
+                drone.in_transit = False
+                self.cost += 1
+                continue
+            next_zone = drone.path[drone.path_index + 1]
+            if next_zone.max_drones == next_zone.nb_drones:
+                continue
+            else:
                 drone.path_index += 1
-                next_zone = drone.path[drone.path_index]
-                if next_zone.max_drones == next_zone.nb_drones:
-                    continue
-                if next_zone.name != "blocked":
-                    if next_zone.name == "restricted":
-                        drone.in_transit = True
-                    next_zone.nb_drones += 1
-                    drone.current_zone.nb_drones -= 1
-                    drone.current_zone = next_zone
-                    self.cost += 1
+            if next_zone.name != "blocked":
+                if next_zone.name == "restricted":
+                    drone.in_transit = True
+                next_zone.nb_drones += 1
+                drone.current_zone.nb_drones -= 1
+                drone.current_zone = next_zone
+                self.cost += 1
