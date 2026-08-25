@@ -7,8 +7,8 @@ class Pathfinder:
     def __init__(self, graph: Graph):
         self.graph = graph
 
-    def find_path(self) -> list[Zone]:
-        start: Zone = self.graph.zones[self.graph.data["start_hub"]["name"]]
+    def find_path(self, p_start: Zone = None) -> list[Zone]:
+        start: Zone = self.graph.zones[self.graph.data["start_hub"]["name"]] if p_start is None else p_start
         end: str = self.graph.data["end_hub"]["name"]
         queue: list[tuple[int, Zone]] = [(0, start)]
         paths: dict[str, list] = self.graph.set_zones_to_inf()

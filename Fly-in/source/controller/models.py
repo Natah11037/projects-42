@@ -1,3 +1,6 @@
+import math
+
+
 class Zone:
     def __init__(self, name: str, x: int, y: int, zone: str,
                  max_drones: int, color: str):
@@ -18,6 +21,8 @@ class Zone:
     def get_cost(self):
         if self.zone == "restricted":
             return 2
+        elif self.zone == "blocked":
+            return math.inf
         else:
             return 1
 
@@ -29,6 +34,9 @@ class Connection:
         self.max_link_capacity = max_link_capacity
         self.nb_drones = 0
 
+    def __str__(self) -> str:
+        return self.zone1.name + "-" + self.zone2.name
+
 
 class Drone:
     def __init__(self, name: str, current_zone: Zone,
@@ -38,3 +46,4 @@ class Drone:
         self.path: list[Zone] = path if path is not None else []
         self.in_transit = False
         self.path_index = 0
+        self.status: str = "start"
