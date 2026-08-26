@@ -459,3 +459,6 @@ display, or adjust a data structure to store new information, etc.
 The details (scope, target, etc.) will be specified in the evaluation guidelines and may
 vary from one evaluation to another for the same project.
 22
+
+[start, gate_hell1, maze_trap_a1, maze_trap_a2, micro_gate1, overflow_hell1, conv_restricted1, conv_restricted2, conv_restricted3, final_merge, final_torture1, final_torture2, final_torture3, final_torture4, final_torture5, impossible_goal]
+[micro_gate1, micro_gate2, micro_gate3, false_hope1, priority_trap1, conv_restricted4, conv_restricted5, conv_restricted6, final_merge, final_torture1, final_torture2, final_torture3, final_torture4, final_torture5, impossible_goal]

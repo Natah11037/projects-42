@@ -19,6 +19,6 @@ if __name__ == "__main__":
     while len(set([drone.current_zone for drone in simulator.drones] + [graph.end_hub])) != 1:
         counter += 1
         print(f"Turn {counter}:")
-        simulator.mooving_drones()
+        simulator.moving_drones()
         for drone in simulator.drones:
             print(f"ID {drone.name}:", drone.current_zone)

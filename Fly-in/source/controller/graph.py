@@ -28,7 +28,7 @@ class Graph():
                 if connection.zone2.zone != "blocked":
                     neighbors.append(connection.zone2)
             elif connection.zone2.name == zone.name:
-                if connection.zone2.zone != "blocked":
+                if connection.zone1.zone != "blocked":
                     neighbors.append(connection.zone1)
         return neighbors
 
