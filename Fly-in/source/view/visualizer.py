@@ -6,18 +6,24 @@ from sys import exit
 from PIL import Image
 
 from source.controller.graph import Graph
+from source.controller.simulation import Simulation
 
 
 class Visualizer:
-    def __init__(self, graph: Graph, path_map: str):
+    def __init__(self, graph: Graph,
+                 simulation: Simulation,
+                 path_map: str):
         self.screen_width = 0
         self.screen_height = 0
         self.size = None
         self.graph = graph
-        self.mode = None
+        self.simulation = simulation
         self.zone_frames = []
         self.zone_frame = 0
         self.zone_animation_timer = 0
+        self.drone_frames = []
+        self.drone_frame = 0
+        self.drone_animation_timer = 0
 
         self.path_map = path_map
         self.window = None
@@ -38,7 +44,7 @@ class Visualizer:
         pygame.init()
 
         self.window = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
-        pygame.display.set_caption("Fly-in-the-Multiverse")
+        pygame.display.set_caption("Fly-in-the-Sonicverse")
 
         self.clock = pygame.time.Clock()
 
@@ -87,10 +93,10 @@ class Visualizer:
         zones = list(self.graph.zones.values())
 
         zone_rect = pygame.Rect(
-            self.screen_width * 0.20,
-            self.screen_height * 0.70,
-            self.screen_width * 0.60,
-            self.screen_height * 0.042
+            self.screen_width * 0.10,
+            self.screen_height * 0.30,
+            self.screen_width * 0.80,
+            self.screen_height * 0.40
         )
 
         number_zones = len(zones)
@@ -131,39 +137,85 @@ class Visualizer:
                 image_rect
             )
 
+    def set_sonic_drone_image(self, image: str):
+        gif = Image.open(image)
+
+        for frame in range(gif.n_frames):
+            gif.seek(frame)
+
+            frame_image = gif.convert("RGBA")
+
+            frame_image = pygame.image.fromstring(
+                frame_image.tobytes(),
+                frame_image.size,
+                "RGBA"
+            )
+
+            frame_image = pygame.transform.scale(
+                frame_image,
+                (150, 150)
+            )
+
+            self.drone_frames.append(frame_image)
+
+    def get_zone_position(self, zone):
+        zones = list(self.graph.zones.values())
+
+        zone_rect = pygame.Rect(
+            self.screen_width * 0.10,
+            self.screen_height * 0.30,
+            self.screen_width * 0.80,
+            self.screen_height * 0.40
+        )
+
+        index = zones.index(zone)
+
+        cell_width = zone_rect.width / len(zones)
+
+        x = zone_rect.left + cell_width * (index + 0.5)
+        y = zone_rect.centery
+
+        return int(x), int(y)
+
+    def draw_sonic_drones(self):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.drone_animation_timer > 50:
+            self.drone_frame += 1
+            self.drone_frame %= len(self.drone_frames)
+            self.drone_animation_timer = current_time
+
+        for drone in self.simulation.drones:
+            x, y = self.get_zone_position(drone.current_zone)
+
+            image = self.drone_frames[self.drone_frame]
+
+            image_rect = image.get_rect(
+                center=(x, y)
+            )
+
+            self.window.blit(image, image_rect)
+
     def draw(self):
         if self.background:
             self.window.blit(self.background, (0, 0))
 
-        if self.mode == "sonic":
-            self.draw_sonic_zones()
+        self.draw_sonic_zones()
+        self.draw_sonic_drones()
 
         pygame.display.update()
-
-    def background_config(self):
-        if self.mode == "stardew valley":
-            self.set_background("source/view/utilities/"
-                                "1200px-Pelican_Town.png")
-        elif self.mode == "sonic":
-            self.set_background("source/view/utilities/"
-                                "sonic_map.png")
-
-    def set_mode(self):
-        if "01_linear_path.txt" in self.path_map:
-            self.mode = "sonic"
-
-    def set_zone_image(self):
-        if self.mode == "sonic":
-            self.set_sonic_zone_image(
-                "source/view/utilities/sonic_ring.gif"
-            )
 
     def run(self):
         self.setup_screen_size()
         self.setup_window()
-        self.set_mode()
-        self.background_config()
-        self.set_zone_image()
+        self.set_background("source/view/utilities/"
+                            "sonic_map.png")
+        self.set_sonic_zone_image(
+            "source/view/utilities/sonic_ring.gif"
+            )
+        self.set_sonic_drone_image(
+            "source/view/utilities/sonic_drone.gif"
+            )
 
         while True:
             self.handle_events()

@@ -10,10 +10,10 @@ if __name__ == "__main__":
     parsed = Parser(os.getenv("MAP"))
     parsed.parse()
     graph = Graph(parsed.data)
-    # pathfinder = Pathfinder(graph)
+    pathfinder = Pathfinder(graph)
     # print(pathfinder.find_path())
-    # simulator = Simulation(graph, graph.data['nb_drones'], pathfinder)
-    # simulator.load_drones()
+    simulator = Simulation(graph, graph.data['nb_drones'], pathfinder)
+    simulator.load_drones()
     # for drone in simulator.drones:
     #     print(f"ID {drone.name}:", drone.current_zone)
     # counter = 0
@@ -23,5 +23,5 @@ if __name__ == "__main__":
     #     simulator.moving_drones()
     #     for drone in simulator.drones:
     #         print(f"ID {drone.name}:", drone.current_zone)
-    game = Visualizer(graph, os.getenv("MAP"))
+    game = Visualizer(graph, simulator, os.getenv("MAP"))
     game.run()
