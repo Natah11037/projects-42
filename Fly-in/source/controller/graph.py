@@ -7,7 +7,11 @@ class Graph():
         self.zones = {
             hub["name"]: Zone(**{
                 key: value for key, value in hub.items() if key != "index"})
-            for hub in data["hub"] + [data["start_hub"], data["end_hub"]]
+            for hub in (
+                [data["start_hub"]]
+                + data["hub"]
+                + [data["end_hub"]]
+            )
         }
         self.start_hub = self.zones[data["start_hub"]["name"]]
         self.end_hub = self.zones[data["end_hub"]["name"]]

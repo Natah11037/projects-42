@@ -7,9 +7,9 @@ from .controller.pathfinder import Pathfinder
 import os
 
 if __name__ == "__main__":
-    # parsed = Parser(os.getenv("MAP"))
-    # parsed.parse()
-    # graph = Graph(parsed.data)
+    parsed = Parser(os.getenv("MAP"))
+    parsed.parse()
+    graph = Graph(parsed.data)
     # pathfinder = Pathfinder(graph)
     # print(pathfinder.find_path())
     # simulator = Simulation(graph, graph.data['nb_drones'], pathfinder)
@@ -23,5 +23,5 @@ if __name__ == "__main__":
     #     simulator.moving_drones()
     #     for drone in simulator.drones:
     #         print(f"ID {drone.name}:", drone.current_zone)
-    game = Visualizer()
+    game = Visualizer(graph, os.getenv("MAP"))
     game.run()
