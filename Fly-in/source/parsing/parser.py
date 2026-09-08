@@ -1,4 +1,4 @@
-class Parser():
+class Parser:
     def __init__(self, map: str):
         self.map = map
 
@@ -18,9 +18,9 @@ class Parser():
             exist_end = False
             for i, (index, line) in enumerate(valid_lines):
                 try:
-                    exist_start, exist_end = self._parse_ligne(line, i, index,
-                                                               exist_start,
-                                                               exist_end)
+                    exist_start, exist_end = self._parse_ligne(
+                        line, i, index, exist_start, exist_end
+                    )
                 except ValueError as e:
                     print(e)
                     exit(1)
@@ -45,7 +45,7 @@ class Parser():
 
     def _read_file(self):
         try:
-            with open(self.map, 'r') as file:
+            with open(self.map, "r") as file:
                 lines = file.readlines()
         except (FileNotFoundError, IOError, TypeError):
             print(f"Error: File '{self.map}' not found or could not be read.")
@@ -53,221 +53,286 @@ class Parser():
         valid_lignes = []
         for index, line in enumerate(lines, start=1):
             line = line.strip()
-            if line.startswith('#') or not line:
+            if line.startswith("#") or not line:
                 continue
             else:
                 valid_lignes.append((index, line))
         return valid_lignes
 
-    def _parse_ligne(self, line: str, i: int, index: int, exist_start: bool,
-                     exist_end: bool):
+    def _parse_ligne(
+        self, line: str, i: int, index: int, exist_start: bool, exist_end: bool
+    ):
         if i == 0:
             if line.startswith("nb_drones:"):
                 try:
                     nb_drones = int(line.split(":")[1].strip())
                 except ValueError:
-                    raise ValueError("Error: Invalid number of drones "
-                                     f", line {index}.")
+                    raise ValueError(
+                        "Error: Invalid number of drones " f", line {index}."
+                    )
                 if nb_drones <= 0:
-                    raise ValueError("Error: Number of drones cannot "
-                                     "be negative or zero, "
-                                     f"line {index}.")
+                    raise ValueError(
+                        "Error: Number of drones cannot "
+                        "be negative or zero, "
+                        f"line {index}."
+                    )
                 else:
                     self.data["nb_drones"] = nb_drones
             else:
-                raise ValueError("Error: First line must specify "
-                                 f"number of drones, line {index}.")
+                raise ValueError(
+                    "Error: First line must specify "
+                    f"number of drones, line {index}."
+                )
         else:
             if line.startswith("start_hub:"):
                 if exist_start:
-                    raise ValueError("Error: Multiple start_hub definitions "
-                                     f", line {index}.")
+                    raise ValueError(
+                        "Error: Multiple start_hub definitions "
+                        f", line {index}."
+                    )
                 self.data["start_hub"] = (index, line.split(":")[1].strip())
                 exist_start = True
             elif line.startswith("end_hub:"):
                 if exist_end:
-                    raise ValueError("Error: Multiple end_hub definitions "
-                                     f", line {index}.")
+                    raise ValueError(
+                        "Error: Multiple end_hub definitions "
+                        f", line {index}."
+                    )
                 self.data["end_hub"] = (index, line.split(":")[1].strip())
                 exist_end = True
             elif line.startswith("hub:"):
                 self.data["hub"].append((index, line.split(":")[1].strip()))
             elif line.startswith("connection:"):
-                self.data["connections"].append((index,
-                                                 line.split(":")[1].strip()))
+                self.data["connections"].append(
+                    (index, line.split(":")[1].strip())
+                )
             else:
                 raise ValueError(f"Error: Invalid line format, line {index}")
         return exist_start, exist_end
 
     def parse_connection(self):
         parsed = []
-        for (index, connection) in self.data["connections"]:
-            clean_connection = connection.split('[')[0].strip()
+        for index, connection in self.data["connections"]:
+            clean_connection = connection.split("[")[0].strip()
             parts = clean_connection.split("-")
             if len(parts) != 2:
-                raise ValueError("Error: Invalid "
-                                 f"connection '{clean_connection}' "
-                                 f", line {index}. "
-                                 "Connections must be in the format "
-                                 "'hub1-hub2'.")
+                raise ValueError(
+                    "Error: Invalid "
+                    f"connection '{clean_connection}' "
+                    f", line {index}. "
+                    "Connections must be in the format "
+                    "'hub1-hub2'."
+                )
             list_hub_name = []
             for hub in self.data["hub"]:
-                list_hub_name.append(hub.get('name', False))
-            list_hub_name.append(self.data['start_hub']['name'])
-            list_hub_name.append(self.data['end_hub']['name'])
+                list_hub_name.append(hub.get("name", False))
+            list_hub_name.append(self.data["start_hub"]["name"])
+            list_hub_name.append(self.data["end_hub"]["name"])
 
             if parts[0] not in list_hub_name:
-                raise ValueError("Error: Invalid "
-                                 f"connection '{clean_connection}' "
-                                 f",line {index}. "
-                                 "Both hubs must be defined in the map.")
+                raise ValueError(
+                    "Error: Invalid "
+                    f"connection '{clean_connection}' "
+                    f",line {index}. "
+                    "Both hubs must be defined in the map."
+                )
             if parts[1] not in list_hub_name:
-                raise ValueError("Error: Invalid "
-                                 f"connection '{clean_connection}' "
-                                 f", line {index}. "
-                                 "Both hubs must be defined in the map.")
+                raise ValueError(
+                    "Error: Invalid "
+                    f"connection '{clean_connection}' "
+                    f", line {index}. "
+                    "Both hubs must be defined in the map."
+                )
             metadata = self.parse_metadata_connection(connection, index)
             if metadata == {}:
                 metadata = {"max_link_capacity": 1}
-            parsed.append({"connection": clean_connection,
-                           "metadata": metadata})
+            parsed.append(
+                {"connection": clean_connection, "metadata": metadata}
+            )
         self.data["connections"] = parsed
 
     def parse_metadata_connection(self, connection: str, index: int):
-        if connection.count('[') > 1:
-            raise ValueError("Error: Multiple metadata brackets for "
-                             f"connection '{connection}', line {index}.")
+        if connection.count("[") > 1:
+            raise ValueError(
+                "Error: Multiple metadata brackets for "
+                f"connection '{connection}', line {index}."
+            )
         metadata = {}
-        if '[' in connection and ']' in connection:
-            meta_str = connection.split('[')[1].split(']')[0]
-            co = connection.split('[')[0].strip()
+        if "[" in connection and "]" in connection:
+            meta_str = connection.split("[")[1].split("]")[0]
+            co = connection.split("[")[0].strip()
             parts = co.split("-")
-            if '=' in meta_str:
-                splitted_meta = meta_str.split('=', 1)
+            if "=" in meta_str:
+                splitted_meta = meta_str.split("=", 1)
                 if len(splitted_meta) != 2:
-                    raise ValueError("Error: Invalid metadata format for "
-                                     f"connection '{connection}',"
-                                     f" line {index}.")
+                    raise ValueError(
+                        "Error: Invalid metadata format for "
+                        f"connection '{connection}',"
+                        f" line {index}."
+                    )
                 key, val = splitted_meta
                 val = val.strip()
                 if key == "max_link_capacity":
                     try:
                         metadata[key] = int(val)
                     except ValueError:
-                        raise ValueError("Error: Invalid max_link_capacity "
-                                         "value for connection "
-                                         f"'{connection}', "
-                                         f"line {index}.")
+                        raise ValueError(
+                            "Error: Invalid max_link_capacity "
+                            "value for connection "
+                            f"'{connection}', "
+                            f"line {index}."
+                        )
                     if metadata[key] < 0:
-                        raise ValueError("Error: max_link_capacity value "
-                                         "cannot be negative, "
-                                         f"line {index}.")
+                        raise ValueError(
+                            "Error: max_link_capacity value "
+                            "cannot be negative, "
+                            f"line {index}."
+                        )
                     if metadata[key] == 0:
-                        all_hubs = (self.data["hub"] +
-                                    [self.data["start_hub"],
-                                     self.data["end_hub"]])
+                        all_hubs = self.data["hub"] + [
+                            self.data["start_hub"],
+                            self.data["end_hub"],
+                        ]
                         dest_zone = next(
-                            (h["zone"] for h in all_hubs
-                             if h["name"] == parts[1]), "normal")
+                            (
+                                h["zone"]
+                                for h in all_hubs
+                                if h["name"] == parts[1]
+                            ),
+                            "normal",
+                        )
                         if dest_zone != "blocked":
-                            raise ValueError("Error: max_link_capacity "
-                                             "value cannot be zero for "
-                                             f"connection '{connection}', "
-                                             f"line {index}.")
+                            raise ValueError(
+                                "Error: max_link_capacity "
+                                "value cannot be zero for "
+                                f"connection '{connection}', "
+                                f"line {index}."
+                            )
                 else:
-                    raise ValueError("Error: Invalid metadata key "
-                                     f"'{key}' for connection '{connection}', "
-                                     f"line {index}.")
+                    raise ValueError(
+                        "Error: Invalid metadata key "
+                        f"'{key}' for connection '{connection}', "
+                        f"line {index}."
+                    )
             else:
-                raise ValueError("Error: Invalid metadata format for "
-                                 f"connection '{connection}', line {index}.")
+                raise ValueError(
+                    "Error: Invalid metadata format for "
+                    f"connection '{connection}', line {index}."
+                )
         return metadata
 
     def parse_same_connection(self):
         for i, (index, connection) in enumerate(self.data["connections"]):
-            clean = connection.split('[')[0].strip()
+            clean = connection.split("[")[0].strip()
             parts = set(clean.split("-"))
-            for j, (index2, connection2) in enumerate(self.data["co"
-                                                                "nnections"]):
-                clean2 = connection2.split('[')[0].strip()
+            for j, (index2, connection2) in enumerate(
+                self.data["co" "nnections"]
+            ):
+                clean2 = connection2.split("[")[0].strip()
                 if i != j and parts == set(clean2.split("-")):
-                    raise ValueError("Error: Duplicate connection "
-                                     f"'{clean}' "
-                                     f"and '{clean2}', line {index}"
-                                     f" and {index2}.")
+                    raise ValueError(
+                        "Error: Duplicate connection "
+                        f"'{clean}' "
+                        f"and '{clean2}', line {index}"
+                        f" and {index2}."
+                    )
 
     def parse_same_name(self):
         names = set()
         for hub in self.data["hub"]:
             if hub["name"] in names:
-                raise ValueError(f"Error: Duplicate hub name '{hub['name']}'"
-                                 f", line {hub['index']}.")
+                raise ValueError(
+                    f"Error: Duplicate hub name '{hub['name']}'"
+                    f", line {hub['index']}."
+                )
             names.add(hub["name"])
         if self.data["start_hub"]["name"] in names:
-            raise ValueError(f"Error: Duplicate hub name "
-                             f"'{self.data['start_hub']['name']}'"
-                             f", line {self.data['start_hub']['index']}.")
+            raise ValueError(
+                f"Error: Duplicate hub name "
+                f"'{self.data['start_hub']['name']}'"
+                f", line {self.data['start_hub']['index']}."
+            )
         names.add(self.data["start_hub"]["name"])
         if self.data["end_hub"]["name"] in names:
-            raise ValueError(f"Error: Duplicate hub name "
-                             f"'{self.data['end_hub']['name']}'"
-                             f", line {self.data['end_hub']['index']}.")
+            raise ValueError(
+                f"Error: Duplicate hub name "
+                f"'{self.data['end_hub']['name']}'"
+                f", line {self.data['end_hub']['index']}."
+            )
         names.add(self.data["end_hub"]["name"])
 
     def parse_name(self):
         for hub in self.data["hub"]:
             if "-" in hub["name"]:
-                raise ValueError("Error: Invalid hub name "
-                                 f"'{hub['name']}'."
-                                 " Hub names cannot contain '-',"
-                                 f" line {hub['index']}.")
+                raise ValueError(
+                    "Error: Invalid hub name "
+                    f"'{hub['name']}'."
+                    " Hub names cannot contain '-',"
+                    f" line {hub['index']}."
+                )
         if "-" in self.data["start_hub"]["name"]:
-            raise ValueError("Error: Invalid start hub name "
-                             f"'{self.data['start_hub']['name']}'."
-                             " Hub names cannot contain '-',"
-                             f" line {self.data['start_hub']['index']}.")
+            raise ValueError(
+                "Error: Invalid start hub name "
+                f"'{self.data['start_hub']['name']}'."
+                " Hub names cannot contain '-',"
+                f" line {self.data['start_hub']['index']}."
+            )
         if "-" in self.data["end_hub"]["name"]:
-            raise ValueError("Error: Invalid end hub name "
-                             f"'{self.data['end_hub']['name']}'."
-                             " Hub names cannot contain '-',"
-                             f" line {self.data['end_hub']['index']}.")
+            raise ValueError(
+                "Error: Invalid end hub name "
+                f"'{self.data['end_hub']['name']}'."
+                " Hub names cannot contain '-',"
+                f" line {self.data['end_hub']['index']}."
+            )
 
     def same_coordinates(self):
         coordinates = set()
         for hub in self.data["hub"]:
             coord = (hub["x"], hub["y"])
             if coord in coordinates:
-                raise ValueError("Error: Duplicate coordinates "
-                                 f"({hub['x']}, {hub['y']}) "
-                                 f"for hub '{hub['name']}', "
-                                 f"line {hub['index']}.")
-            if coord == (self.data["start_hub"]["x"],
-                         self.data["start_hub"]["y"]):
-                raise ValueError("Error: Duplicate coordinates "
-                                 f"({hub['x']}, {hub['y']}) "
-                                 f"for hub '{hub['name']}', "
-                                 f"line {hub['index']}.")
-            if coord == (self.data["end_hub"]["x"],
-                         self.data["end_hub"]["y"]):
-                raise ValueError("Error: Duplicate coordinates "
-                                 f"({hub['x']}, {hub['y']}) "
-                                 f"for hub '{hub['name']}', "
-                                 f"line {hub['index']}.")
+                raise ValueError(
+                    "Error: Duplicate coordinates "
+                    f"({hub['x']}, {hub['y']}) "
+                    f"for hub '{hub['name']}', "
+                    f"line {hub['index']}."
+                )
+            if coord == (
+                self.data["start_hub"]["x"],
+                self.data["start_hub"]["y"],
+            ):
+                raise ValueError(
+                    "Error: Duplicate coordinates "
+                    f"({hub['x']}, {hub['y']}) "
+                    f"for hub '{hub['name']}', "
+                    f"line {hub['index']}."
+                )
+            if coord == (self.data["end_hub"]["x"], self.data["end_hub"]["y"]):
+                raise ValueError(
+                    "Error: Duplicate coordinates "
+                    f"({hub['x']}, {hub['y']}) "
+                    f"for hub '{hub['name']}', "
+                    f"line {hub['index']}."
+                )
             coordinates.add(coord)
 
-    def _parse_hub_raw(self, raw: str, index: int,
-                       hub_type: str = "hub") -> dict:
+    def _parse_hub_raw(
+        self, raw: str, index: int, hub_type: str = "hub"
+    ) -> dict:
         parts = raw.split()
         name = parts[0]
-        if raw.count('[') > 1:
-            raise ValueError("Error: Multiple metadata brackets for hub "
-                             f"'{name}', line {index}.")
+        if raw.count("[") > 1:
+            raise ValueError(
+                "Error: Multiple metadata brackets for hub "
+                f"'{name}', line {index}."
+            )
         try:
             x = int(parts[1])
             y = int(parts[2])
         except (ValueError, IndexError):
-            raise ValueError("Error: Invalid coordinates for hub "
-                             f"'{name}', line {index}.")
+            raise ValueError(
+                "Error: Invalid coordinates for hub "
+                f"'{name}', line {index}."
+            )
         color = "white"
         zone = "normal"
         is_endpoint = hub_type in ("start", "end")
@@ -279,50 +344,62 @@ class Parser():
             if "=" in part:
                 key, val = part.split("=", 1)
                 if key == "color":
-                    valid_colors = {
-                        "red", "orange", "yellow", "green", "blue",
-                        "pink", "violet", "purple", "white", "black",
-                        "grey", "gray", "brown", "cyan", "magenta",
-                        "lime", "gold", "crimson", "maroon", "darkred",
-                        "rainbow", "indigo", "teal", "coral", "salmon",
-                        "beige", "turquoise", "silver"
-                    }
-                    if val.lower() in valid_colors:
+                    if val and val.isalpha():
                         color = val.lower()
                     else:
-                        raise ValueError("Error: Invalid color value "
-                                         f"'{val}' for hub '{name}', "
-                                         f"line {index}.")
+                        raise ValueError(
+                            "Error: Invalid color value "
+                            f"'{val}' for hub '{name}', "
+                            f"line {index}."
+                        )
                 elif key == "zone":
-                    if val in ["normal", "blocked", "restricted",
-                               "priority"]:
+                    if val in ["normal", "blocked", "restricted", "priority"]:
 
                         zone = val
                     else:
-                        raise ValueError("Error: Invalid zone value for "
-                                         f"hub '{name}', line {index}.")
+                        raise ValueError(
+                            "Error: Invalid zone value for "
+                            f"hub '{name}', line {index}."
+                        )
                 elif key == "max_drones":
                     try:
                         max_drones = int(val)
                     except ValueError:
-                        raise ValueError("Error: Invalid max_drones value for "
-                                         f"hub '{name}', line {index}.")
+                        raise ValueError(
+                            "Error: Invalid max_drones value for "
+                            f"hub '{name}', line {index}."
+                        )
                     if max_drones <= 0:
-                        raise ValueError("Error: Max drones value cannot"
-                                         " be negative or "
-                                         f"zero, line {index}.")
+                        raise ValueError(
+                            "Error: Max drones value cannot"
+                            " be negative or "
+                            f"zero, line {index}."
+                        )
                     if max_drones > self.data["nb_drones"]:
-                        raise ValueError("Error: Max drones value cannot "
-                                         "exceed the number of drones, "
-                                         f"line {index}.")
+                        raise ValueError(
+                            "Error: Max drones value cannot "
+                            "exceed the number of drones, "
+                            f"line {index}."
+                        )
                 else:
-                    raise ValueError(f"Error: Invalid metadata key '{key}' "
-                                     f"for hub '{name}', line {index}.")
+                    raise ValueError(
+                        f"Error: Invalid metadata key '{key}' "
+                        f"for hub '{name}', line {index}."
+                    )
             else:
-                raise ValueError(f"Error: Invalid metadata '{part}' for "
-                                 f"hub '{name}', line {index}.")
-        return {"name": name, "x": x, "y": y, "color": color, "zone": zone,
-                "max_drones": max_drones, "index": index}
+                raise ValueError(
+                    f"Error: Invalid metadata '{part}' for "
+                    f"hub '{name}', line {index}."
+                )
+        return {
+            "name": name,
+            "x": x,
+            "y": y,
+            "color": color,
+            "zone": zone,
+            "max_drones": max_drones,
+            "index": index,
+        }
 
     def parse_hub(self):
         if self.data["start_hub"]:
@@ -339,8 +416,10 @@ class Parser():
         names = set()
         for hub in self.data["hub"]:
             if hub["name"] in names:
-                raise ValueError(f"Error: Duplicate hub name '{hub['name']}'"
-                                 f", line {hub['index']}.")
+                raise ValueError(
+                    f"Error: Duplicate hub name '{hub['name']}'"
+                    f", line {hub['index']}."
+                )
             names.add(hub["name"])
 
     def parse_access_to_start_and_end(self):
@@ -351,8 +430,9 @@ class Parser():
 
     def can_reach_the_end(self):
         queue = [self.data["start_hub"]["name"]]
-        blocked = {hub["name"] for hub in self.data[
-            "hub"] if hub["zone"] == "blocked"}
+        blocked = {
+            hub["name"] for hub in self.data["hub"] if hub["zone"] == "blocked"
+        }
         end = self.data["end_hub"]["name"]
 
         connected = {self.data["start_hub"]["name"]}
@@ -372,15 +452,18 @@ class Parser():
                 if neighbor not in connected:
                     connected.add(neighbor)
                     queue.append(neighbor)
-        raise ValueError("Error: The end hub is unreachable from the start "
-                         "hub.")
+        raise ValueError(
+            "Error: The end hub is unreachable from the start " "hub."
+        )
 
 
 if __name__ == "__main__":
     parser = Parser("./assets/maps/easy/01_linear_path.txt")
     data = parser.parse()
-    print(f"Start hub: {data['start_hub']}\n"
-          f"Hubs: {data['hub']}\n"
-          f"End hub: {data['end_hub']}\n"
-          f"Connections: {data['connections']}\n"
-          f"Number of drones: {data['nb_drones']}")
+    print(
+        f"Start hub: {data['start_hub']}\n"
+        f"Hubs: {data['hub']}\n"
+        f"End hub: {data['end_hub']}\n"
+        f"Connections: {data['connections']}\n"
+        f"Number of drones: {data['nb_drones']}"
+    )

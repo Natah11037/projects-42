@@ -1,5 +1,3 @@
-from math import inf
-
 import pygame
 import tkinter as tk
 from sys import exit
@@ -10,9 +8,7 @@ from source.controller.simulation import Simulation
 
 
 class Visualizer:
-    def __init__(self, graph: Graph,
-                 simulation: Simulation,
-                 path_map: str):
+    def __init__(self, graph: Graph, simulation: Simulation, path_map: str):
         self.screen_width = 0
         self.screen_height = 0
         self.size = None
@@ -58,6 +54,13 @@ class Visualizer:
     def set_background(self, image: str):
         self.background = self.load_image(image)
 
+    @staticmethod
+    def _resolve_color(color: str) -> tuple[int, int, int, int]:
+        try:
+            return pygame.Color(color)
+        except ValueError:
+            return pygame.Color("white")
+
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,36 +80,15 @@ class Visualizer:
             frame_image = gif.convert("RGBA")
 
             frame_image = pygame.image.fromstring(
-                frame_image.tobytes(),
-                frame_image.size,
-                "RGBA"
+                frame_image.tobytes(), frame_image.size, "RGBA"
             )
 
-            frame_image = pygame.transform.scale(
-                frame_image,
-                (125, 125)
-            )
+            frame_image = pygame.transform.scale(frame_image, (125, 125))
 
             self.zone_frames.append(frame_image)
 
     def draw_sonic_zones(self):
         zones = list(self.graph.zones.values())
-
-        zone_rect = pygame.Rect(
-            self.screen_width * 0.10,
-            self.screen_height * 0.30,
-            self.screen_width * 0.80,
-            self.screen_height * 0.40
-        )
-
-        number_zones = len(zones)
-        
-        columns = min(number_zones, float(inf))
-
-        rows = (number_zones + columns - 1) // columns
-
-        cell_width = zone_rect.width / columns
-        cell_height = zone_rect.height / rows
 
         current_time = pygame.time.get_ticks()
 
@@ -117,25 +99,19 @@ class Visualizer:
 
         image = self.zone_frames[self.zone_frame]
 
-        for index, zone in enumerate(zones):
+        for zone in zones:
 
             image = self.zone_frames[self.zone_frame].copy()
-            image.fill(zone.color, special_flags=pygame.BLEND_RGBA_MULT)
-
-            column = index % columns
-            row = index // columns
-
-            x = zone_rect.left + cell_width * (column + 0.5)
-            y = zone_rect.top + cell_height * (row + 0.5)
-
-            image_rect = image.get_rect(
-                center=(int(x), int(y))
+            image.fill(
+                self._resolve_color(zone.color),
+                special_flags=pygame.BLEND_RGBA_MULT,
             )
 
-            self.window.blit(
-                image,
-                image_rect
-            )
+            x, y = self.get_zone_position(zone)
+
+            image_rect = image.get_rect(center=(int(x), int(y)))
+
+            self.window.blit(image, image_rect)
 
     def set_sonic_drone_image(self, image: str):
         gif = Image.open(image)
@@ -146,15 +122,10 @@ class Visualizer:
             frame_image = gif.convert("RGBA")
 
             frame_image = pygame.image.fromstring(
-                frame_image.tobytes(),
-                frame_image.size,
-                "RGBA"
+                frame_image.tobytes(), frame_image.size, "RGBA"
             )
 
-            frame_image = pygame.transform.scale(
-                frame_image,
-                (150, 150)
-            )
+            frame_image = pygame.transform.scale(frame_image, (150, 150))
 
             self.drone_frames.append(frame_image)
 
@@ -163,17 +134,22 @@ class Visualizer:
 
         zone_rect = pygame.Rect(
             self.screen_width * 0.10,
-            self.screen_height * 0.30,
+            self.screen_height * 0.25,
             self.screen_width * 0.80,
-            self.screen_height * 0.40
+            self.screen_height * 0.40,
         )
 
-        index = zones.index(zone)
+        min_x = min(current_zone.x for current_zone in zones)
+        max_x = max(current_zone.x for current_zone in zones)
+        min_y = min(current_zone.y for current_zone in zones)
+        max_y = max(current_zone.y for current_zone in zones)
 
-        cell_width = zone_rect.width / len(zones)
+        display_rect = zone_rect.inflate(-130, -130)
+        x_ratio = 0.5 if max_x == min_x else (zone.x - min_x) / (max_x - min_x)
+        y_ratio = 0.5 if max_y == min_y else (zone.y - min_y) / (max_y - min_y)
 
-        x = zone_rect.left + cell_width * (index + 0.5)
-        y = zone_rect.centery
+        x = display_rect.left + display_rect.width * x_ratio
+        y = display_rect.top + display_rect.height * y_ratio
 
         return int(x), int(y)
 
@@ -190,9 +166,7 @@ class Visualizer:
 
             image = self.drone_frames[self.drone_frame]
 
-            image_rect = image.get_rect(
-                center=(x, y)
-            )
+            image_rect = image.get_rect(center=(x, y))
 
             self.window.blit(image, image_rect)
 
@@ -208,14 +182,9 @@ class Visualizer:
     def run(self):
         self.setup_screen_size()
         self.setup_window()
-        self.set_background("source/view/utilities/"
-                            "sonic_map.png")
-        self.set_sonic_zone_image(
-            "source/view/utilities/sonic_ring.gif"
-            )
-        self.set_sonic_drone_image(
-            "source/view/utilities/sonic_drone.gif"
-            )
+        self.set_background("source/view/utilities/" "sonic_map.png")
+        self.set_sonic_zone_image("source/view/utilities/sonic_ring.gif")
+        self.set_sonic_drone_image("source/view/utilities/sonic_drone.gif")
 
         while True:
             self.handle_events()
