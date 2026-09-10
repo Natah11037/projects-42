@@ -12,7 +12,7 @@ if __name__ == "__main__":
     graph = Graph(parsed.data)
     pathfinder = Pathfinder(graph)
     print(pathfinder.find_path())
-    simulator = Simulation(graph, graph.data['nb_drones'], pathfinder)
+    simulator = Simulation(graph, graph.data["nb_drones"], pathfinder)
     simulator.load_drones()
     # for drone in simulator.drones:
     #     print(f"ID {drone.name}:", drone.current_zone)
@@ -23,5 +23,10 @@ if __name__ == "__main__":
     #     simulator.moving_drones()
     #     for drone in simulator.drones:
     #         print(f"ID {drone.name}:", drone.current_zone)
-    game = Visualizer(graph, simulator, os.getenv("MAP"))
+    game = Visualizer(
+        graph,
+        simulator.get_view_state(),
+        simulator.advance_turn,
+        os.getenv("MAP"),
+    )
     game.run()

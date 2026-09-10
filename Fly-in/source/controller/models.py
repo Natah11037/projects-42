@@ -1,9 +1,25 @@
 import math
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class DroneViewState:
+    name: str
+    zone_name: str | None
+    connection_zone_names: tuple[str, str] | None
+    path: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SimulationViewState:
+    turn: int
+    drones: tuple[DroneViewState, ...]
 
 
 class Zone:
-    def __init__(self, name: str, x: int, y: int, zone: str,
-                 max_drones: int, color: str):
+    def __init__(
+        self, name: str, x: int, y: int, zone: str, max_drones: int, color: str
+    ):
         self.name = name
         self.x = x
         self.y = y
@@ -39,8 +55,7 @@ class Connection:
 
 
 class Drone:
-    def __init__(self, name: str, current_zone: Zone,
-                 path: list[Zone] | None = None):
+    def __init__(self, name: str, current_zone: Zone, path: list[Zone] | None = None):
         self.name = name
         self.current_zone = current_zone
         self.path: list[Zone] = path if path is not None else []

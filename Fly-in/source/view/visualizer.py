@@ -1,11 +1,9 @@
 import os
-import tkinter as tk
 from sys import exit
 from PIL import Image
 
 from source.controller.graph import Graph
-from source.controller.models import Connection
-from source.controller.simulation import Simulation
+from source.controller.models import SimulationViewState
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 try:
@@ -16,19 +14,25 @@ except ImportError:
 
 
 class Visualizer:
-    def __init__(self, graph: Graph, simulation: Simulation, path_map: str):
+    def __init__(
+        self,
+        graph: Graph,
+        initial_state: SimulationViewState,
+        advance_turn,
+        path_map: str,
+    ):
         self.screen_width = 0
         self.screen_height = 0
         self.size = None
         self.graph = graph
-        self.simulation = simulation
+        self.state = initial_state
+        self.advance_turn = advance_turn
         self.zone_frames = []
         self.zone_frame = 0
         self.zone_animation_timer = 0
         self.drone_frames = []
         self.drone_frame = 0
         self.drone_animation_timer = 0
-        self.turn = 0
         self.sprite_index = 0
 
         self.path_map = path_map
@@ -37,14 +41,10 @@ class Visualizer:
         self.clock = None
 
     def setup_screen_size(self):
-        root = tk.Tk()
-        root.withdraw()
-
-        self.screen_width = root.winfo_screenwidth()
-        self.screen_height = root.winfo_screenheight()
+        pygame.init()
+        desktop_size = pygame.display.get_desktop_sizes()[0]
+        self.screen_width, self.screen_height = desktop_size
         self.size = (self.screen_width, self.screen_height)
-
-        root.destroy()
 
     def setup_window(self):
         pygame.init()
@@ -81,8 +81,7 @@ class Visualizer:
                     pygame.quit()
                     exit()
                 if event.key == pygame.K_SPACE:
-                    self.turn += 1
-                    self.simulation.moving_drones()
+                    self.state = self.advance_turn()
 
     def set_sonic_zone_image(self, image: str):
         gif = Image.open(image)
@@ -171,7 +170,7 @@ class Visualizer:
 
     def draw_turns(self):
         font = pygame.font.Font(None, 36)
-        turns_text = font.render(f"Turns: {self.turn}", True, (255, 255, 255))
+        turns_text = font.render(f"Turns: {self.state.turn}", True, (255, 255, 255))
         self.window.blit(turns_text, (20, 20))
 
     def draw_connections(self, zone_a, zone_b):
@@ -193,14 +192,17 @@ class Visualizer:
             self.drone_frame += 1
             self.drone_animation_timer = current_time
 
-        for drone_index, drone in enumerate(self.simulation.drones):
-            if isinstance(drone.current_zone, Connection):
-                zone_a_position = self.get_zone_position(drone.current_zone.zone1)
-                zone_b_position = self.get_zone_position(drone.current_zone.zone2)
+        for drone_index, drone in enumerate(self.state.drones):
+            if drone.connection_zone_names:
+                zone_a = self.graph.zones[drone.connection_zone_names[0]]
+                zone_b = self.graph.zones[drone.connection_zone_names[1]]
+                zone_a_position = self.get_zone_position(zone_a)
+                zone_b_position = self.get_zone_position(zone_b)
                 x = (zone_a_position[0] + zone_b_position[0]) // 2
                 y = (zone_a_position[1] + zone_b_position[1]) // 2
             else:
-                x, y = self.get_zone_position(drone.current_zone)
+                zone = self.graph.zones[drone.zone_name]
+                x, y = self.get_zone_position(zone)
 
             drone_animation = self.drone_frames[drone_index % len(self.drone_frames)]
             image = drone_animation[self.drone_frame % len(drone_animation)]

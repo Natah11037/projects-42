@@ -1,6 +1,11 @@
 from httpx import ConnectError
 from .graph import Graph
-from .models import Zone, Connection, Drone
+from .models import (
+    Connection,
+    Drone,
+    DroneViewState,
+    SimulationViewState,
+)
 from .pathfinder import Pathfinder
 
 
@@ -9,10 +14,10 @@ class Simulation:
         self.drones = []
         self.zones = []
         self.connections = []
-        self.cost = 0
         self.graph = graph
         self.nb_drones = nb_drones
         self.pathfinder = pathfinder
+        self.turn = 0
 
     def load_drones(self):
         self.drones = [
@@ -40,7 +45,6 @@ class Simulation:
                     drone.current_zone = next_zone
                     drone.current_zone.nb_drones += 1
                     drone.path_index += 1
-                    self.cost += 1
                 else:
                     connection = self.graph.get_connection(
                         drone.current_zone, next_zone
@@ -82,3 +86,37 @@ class Simulation:
                 drone.path_index += 1
         for connection in restricted_con_status:
             connection.nb_drones -= 1
+
+    def get_view_state(self) -> SimulationViewState:
+        drones = []
+        for drone in self.drones:
+            if isinstance(drone.current_zone, Connection):
+                zone_name = None
+                connection_zone_names = (
+                    drone.current_zone.zone1.name,
+                    drone.current_zone.zone2.name,
+                )
+            else:
+                zone_name = drone.current_zone.name
+                connection_zone_names = None
+
+            drones.append(
+                DroneViewState(
+                    name=drone.name,
+                    zone_name=zone_name,
+                    connection_zone_names=connection_zone_names,
+                    path=tuple(zone.name for zone in drone.path),
+                )
+            )
+
+        return SimulationViewState(self.turn, tuple(drones))
+
+    def advance_turn(self) -> SimulationViewState:
+        if self.drones and all(
+            drone.current_zone == self.graph.end_hub for drone in self.drones
+        ):
+            return self.get_view_state()
+
+        self.moving_drones()
+        self.turn += 1
+        return self.get_view_state()
