@@ -78,7 +78,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='/mnt/c/Users/nwebe/desktop/projects-42/Fly-in/.venv'
+VIRTUAL_ENV='/home/nweber--/git_perso/Fly-in/.venv'
 if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
     VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
 fi
@@ -98,8 +98,8 @@ _OLD_VIRTUAL_PATH="$PATH"
 PATH="$VIRTUAL_ENV/bin:$PATH"
 export PATH
 
-if [ "xmazegen" != x ] ; then
-    VIRTUAL_ENV_PROMPT="mazegen"
+if [ "xFly-in" != x ] ; then
+    VIRTUAL_ENV_PROMPT="Fly-in"
 else
     VIRTUAL_ENV_PROMPT=$(basename "$VIRTUAL_ENV")
 fi

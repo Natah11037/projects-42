@@ -59,9 +59,9 @@ class Simulation:
                         path = self.pathfinder.find_path(drone.current_zone)
                         if path:
                             drone.path = path
-                            drone.path_index = 1
+                            drone.path_index = 0
                         next_zone.zone = og_type
-                        next_zone = drone.path[drone.path_index]
+                        next_zone = drone.path[drone.path_index + 1]
                         if next_zone.zone == "restricted":
                             connection = self.graph.get_connection(
                                 drone.current_zone, next_zone
@@ -73,6 +73,7 @@ class Simulation:
                             connection = drone.current_zone
                         else:
                             drone.current_zone = next_zone
+                            drone.path_index += 1
                     else:
                         connection.nb_drones += 1
                         drone.in_transit = True

@@ -1,4 +1,4 @@
-#!/mnt/c/Users/nwebe/desktop/projects-42/Fly-in/.venv/bin/python
+#!/home/nweber--/git_perso/Fly-in/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import sys
 from httpx import main

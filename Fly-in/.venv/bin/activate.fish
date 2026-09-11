@@ -79,7 +79,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/mnt/c/Users/nwebe/desktop/projects-42/Fly-in/.venv'
+set -gx VIRTUAL_ENV '/home/nweber--/git_perso/Fly-in/.venv'
 
 # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
 if test (string sub -s 1 -l 1 $FISH_VERSION) -lt 3
@@ -91,8 +91,8 @@ set -gx PATH "$VIRTUAL_ENV"'/bin' $PATH
 
 # Prompt override provided?
 # If not, just use the environment name.
-if test -n 'mazegen'
-    set -gx VIRTUAL_ENV_PROMPT 'mazegen'
+if test -n 'Fly-in'
+    set -gx VIRTUAL_ENV_PROMPT 'Fly-in'
 else
     set -gx VIRTUAL_ENV_PROMPT (basename "$VIRTUAL_ENV")
 end

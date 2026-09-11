@@ -41,17 +41,15 @@ class Visualizer:
         self.clock = None
 
     def setup_screen_size(self):
-        pygame.init()
-        desktop_size = pygame.display.get_desktop_sizes()[0]
-        self.screen_width, self.screen_height = desktop_size
+        pygame.display.init()
+        pygame.font.init()
+        screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+        self.screen_width, self.screen_height = screen.get_size()
         self.size = (self.screen_width, self.screen_height)
 
     def setup_window(self):
-        pygame.init()
-
         self.window = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         pygame.display.set_caption("Fly-in-the-Sonicverse")
-
         self.clock = pygame.time.Clock()
 
     def load_image(self, image: str):
@@ -170,7 +168,9 @@ class Visualizer:
 
     def draw_turns(self):
         font = pygame.font.Font(None, 36)
-        turns_text = font.render(f"Turns: {self.state.turn}", True, (255, 255, 255))
+        turns_text = font.render(
+            f"Turns: {self.state.turn}", True, (255, 255, 255)
+        )
         self.window.blit(turns_text, (20, 20))
 
     def draw_connections(self, zone_a, zone_b):
@@ -204,7 +204,9 @@ class Visualizer:
                 zone = self.graph.zones[drone.zone_name]
                 x, y = self.get_zone_position(zone)
 
-            drone_animation = self.drone_frames[drone_index % len(self.drone_frames)]
+            drone_animation = self.drone_frames[
+                drone_index % len(self.drone_frames)
+            ]
             image = drone_animation[self.drone_frame % len(drone_animation)]
 
             image_rect = image.get_rect(center=(x, y))

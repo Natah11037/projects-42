@@ -31,15 +31,15 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV '/mnt/c/Users/nwebe/desktop/projects-42/Fly-in/.venv'
+setenv VIRTUAL_ENV '/home/nweber--/git_perso/Fly-in/.venv'
 
 set _OLD_VIRTUAL_PATH="$PATH:q"
 setenv PATH "$VIRTUAL_ENV:q/bin:$PATH:q"
 
 
 
-if ('mazegen' != "") then
-    setenv VIRTUAL_ENV_PROMPT 'mazegen'
+if ('Fly-in' != "") then
+    setenv VIRTUAL_ENV_PROMPT 'Fly-in'
 else
     setenv VIRTUAL_ENV_PROMPT "$VIRTUAL_ENV:t:q"
 endif
