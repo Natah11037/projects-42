@@ -22,14 +22,15 @@ class Simulation:
     def load_drones(self):
         self.drones = [
             Drone(
-                name=f"Drone {i}",
+                name=f"D{i}",
                 current_zone=self.graph.zones[self.graph.start_hub.name],
                 path=self.pathfinder.find_path(),
             )
             for i in range(1, self.nb_drones + 1)
         ]
 
-    def moving_drones(self):
+    def moving_drones(self) -> list[str]:
+        movements = []
         restricted_con_status = []
         for drone in self.drones:
             if drone.current_zone == self.graph.end_hub:
@@ -45,6 +46,7 @@ class Simulation:
                     drone.current_zone = next_zone
                     drone.current_zone.nb_drones += 1
                     drone.path_index += 1
+                    movements.append(f"{drone.name}-{next_zone.name}")
                 else:
                     connection = self.graph.get_connection(
                         drone.current_zone, next_zone
@@ -71,22 +73,27 @@ class Simulation:
                             drone.current_zone.nb_drones -= 1
                             drone.current_zone = connection
                             connection = drone.current_zone
+                            movements.append(f"{drone.name}-{connection}")
                         else:
                             drone.current_zone = next_zone
                             drone.path_index += 1
+                            movements.append(f"{drone.name}-{next_zone.name}")
                     else:
                         connection.nb_drones += 1
                         drone.in_transit = True
                         drone.current_zone.nb_drones -= 1
                         drone.current_zone = connection
                         connection = drone.current_zone
+                        movements.append(f"{drone.name}-{connection}")
             else:
                 next_zone.nb_drones += 1
                 drone.current_zone.nb_drones -= 1
                 drone.current_zone = next_zone
                 drone.path_index += 1
+                movements.append(f"{drone.name}-{next_zone.name}")
         for connection in restricted_con_status:
             connection.nb_drones -= 1
+        return movements
 
     def get_view_state(self) -> SimulationViewState:
         drones = []
