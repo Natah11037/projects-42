@@ -1,9 +1,10 @@
 import os
 from sys import exit
+from typing import Any, Callable
 from PIL import Image
 
 from source.controller.graph import Graph
-from source.controller.models import SimulationViewState
+from source.controller.models import SimulationViewState, Zone
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 try:
@@ -18,58 +19,58 @@ class Visualizer:
         self,
         graph: Graph,
         initial_state: SimulationViewState,
-        advance_turn,
+        advance_turn: Callable[[], SimulationViewState],
         path_map: str,
-    ):
+    ) -> None:
         self.screen_width = 0
         self.screen_height = 0
-        self.size = None
+        self.size: tuple[int, int] = (0, 0)
         self.graph = graph
         self.state = initial_state
         self.advance_turn = advance_turn
-        self.zone_frames = []
+        self.zone_frames: list[pygame.Surface] = []
         self.zone_frame = 0
         self.zone_animation_timer = 0
-        self.drone_frames = []
+        self.drone_frames: list[list[pygame.Surface]] = []
         self.drone_frame = 0
         self.drone_animation_timer = 0
         self.sprite_index = 0
 
         self.path_map = path_map
-        self.window = None
-        self.background = None
-        self.clock = None
+        self.window: Any = None
+        self.background: pygame.Surface | None = None
+        self.clock: Any = None
 
-    def setup_screen_size(self):
+    def setup_screen_size(self) -> None:
         pygame.display.init()
         pygame.font.init()
         screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
         self.screen_width, self.screen_height = screen.get_size()
         self.size = (self.screen_width, self.screen_height)
 
-    def setup_window(self):
+    def setup_window(self) -> None:
         self.window = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         pygame.display.set_caption("Fly-in-the-Sonicverse")
         self.clock = pygame.time.Clock()
 
-    def load_image(self, image: str):
+    def load_image(self, image: str) -> pygame.Surface:
         file = pygame.image.load(image)
         file = file.convert()
         file = pygame.transform.scale(file, self.size)
 
         return file
 
-    def set_background(self, image: str):
+    def set_background(self, image: str) -> None:
         self.background = self.load_image(image)
 
     @staticmethod
-    def _resolve_color(color: str) -> tuple[int, int, int, int]:
+    def _resolve_color(color: str) -> pygame.Color:
         try:
             return pygame.Color(color)
         except ValueError:
             return pygame.Color("white")
 
-    def handle_events(self):
+    def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -81,23 +82,23 @@ class Visualizer:
                 if event.key == pygame.K_SPACE:
                     self.state = self.advance_turn()
 
-    def set_sonic_zone_image(self, image: str):
+    def set_sonic_zone_image(self, image: str) -> None:
         gif = Image.open(image)
 
-        for frame in range(gif.n_frames):
+        for frame in range(int(getattr(gif, "n_frames", 1))):
             gif.seek(frame)
 
-            frame_image = gif.convert("RGBA")
+            pil_frame = gif.convert("RGBA")
 
-            frame_image = pygame.image.fromstring(
-                frame_image.tobytes(), frame_image.size, "RGBA"
+            surface = pygame.image.fromstring(
+                pil_frame.tobytes(), pil_frame.size, "RGBA"
             )
 
-            frame_image = pygame.transform.scale(frame_image, (100, 100))
+            surface = pygame.transform.scale(surface, (100, 100))
 
-            self.zone_frames.append(frame_image)
+            self.zone_frames.append(surface)
 
-    def draw_sonic_zones(self):
+    def draw_sonic_zones(self) -> None:
         zones = list(self.graph.zones.values())
 
         current_time = pygame.time.get_ticks()
@@ -123,26 +124,28 @@ class Visualizer:
 
             self.window.blit(image, image_rect)
 
-    def set_sonic_drone_image(self, image_info: tuple[str, tuple[int, int]]):
+    def set_sonic_drone_image(
+        self, image_info: tuple[str, tuple[int, int]]
+    ) -> None:
         gif = Image.open(image_info[0])
         frames = []
 
-        for frame in range(gif.n_frames):
+        for frame in range(int(getattr(gif, "n_frames", 1))):
             gif.seek(frame)
 
-            frame_image = gif.convert("RGBA")
+            pil_frame = gif.convert("RGBA")
 
-            frame_image = pygame.image.fromstring(
-                frame_image.tobytes(), frame_image.size, "RGBA"
+            surface = pygame.image.fromstring(
+                pil_frame.tobytes(), pil_frame.size, "RGBA"
             )
 
-            frame_image = pygame.transform.scale(frame_image, image_info[1])
+            surface = pygame.transform.scale(surface, image_info[1])
 
-            frames.append(frame_image)
+            frames.append(surface)
 
         self.drone_frames.append(frames)
 
-    def get_zone_position(self, zone):
+    def get_zone_position(self, zone: Zone) -> tuple[int, int]:
         zones = list(self.graph.zones.values())
 
         zone_rect = pygame.Rect(
@@ -166,14 +169,14 @@ class Visualizer:
 
         return int(x), int(y)
 
-    def draw_turns(self):
+    def draw_turns(self) -> None:
         font = pygame.font.Font(None, 36)
         turns_text = font.render(
             f"Turns: {self.state.turn}", True, (255, 255, 255)
         )
         self.window.blit(turns_text, (20, 20))
 
-    def draw_connections(self, zone_a, zone_b):
+    def draw_connections(self, zone_a: Zone, zone_b: Zone) -> None:
         x1, y1 = self.get_zone_position(zone_a)
         x2, y2 = self.get_zone_position(zone_b)
 
@@ -185,7 +188,7 @@ class Visualizer:
             width=10,
         )
 
-    def draw_sonic_drones(self):
+    def draw_sonic_drones(self) -> None:
         current_time = pygame.time.get_ticks()
 
         if current_time - self.drone_animation_timer > 50:
@@ -201,6 +204,7 @@ class Visualizer:
                 x = (zone_a_position[0] + zone_b_position[0]) // 2
                 y = (zone_a_position[1] + zone_b_position[1]) // 2
             else:
+                assert drone.zone_name is not None
                 zone = self.graph.zones[drone.zone_name]
                 x, y = self.get_zone_position(zone)
 
@@ -213,7 +217,7 @@ class Visualizer:
 
             self.window.blit(image, image_rect)
 
-    def draw(self):
+    def draw(self) -> None:
         if self.background:
             self.window.blit(self.background, (0, 0))
 
@@ -225,7 +229,7 @@ class Visualizer:
 
         pygame.display.update()
 
-    def run(self):
+    def run(self) -> None:
         self.setup_screen_size()
         self.setup_window()
         self.set_background("source/view/utilities/" "sonic_map.png")

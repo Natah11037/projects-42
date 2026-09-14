@@ -1,17 +1,16 @@
+from typing import Any
+
 from .models import Zone, Connection
 
 
-class Graph():
-    def __init__(self, data: dict):
+class Graph:
+    def __init__(self, data: dict[str, Any]) -> None:
         self.data = data
-        self.zones = {
-            hub["name"]: Zone(**{
-                key: value for key, value in hub.items() if key != "index"})
-            for hub in (
-                [data["start_hub"]]
-                + data["hub"]
-                + [data["end_hub"]]
+        self.zones: dict[str, Zone] = {
+            hub["name"]: Zone(
+                **{key: value for key, value in hub.items() if key != "index"}
             )
+            for hub in ([data["start_hub"]] + data["hub"] + [data["end_hub"]])
         }
         self.start_hub = self.zones[data["start_hub"]["name"]]
         self.end_hub = self.zones[data["end_hub"]["name"]]
@@ -21,12 +20,14 @@ class Graph():
             zone1 = self.zones[parts[0]]
             zone2 = self.zones[parts[1]]
             max_link_capacity = conn_data["metadata"].get(
-                "max_link_capacity", 1)
-            self.connections.append(Connection(
-                zone1, zone2, max_link_capacity))
+                "max_link_capacity", 1
+            )
+            self.connections.append(
+                Connection(zone1, zone2, max_link_capacity)
+            )
 
-    def get_neighbors(self, zone: Zone):
-        neighbors = []
+    def get_neighbors(self, zone: Zone) -> list[Zone]:
+        neighbors: list[Zone] = []
         for connection in self.connections:
             if connection.zone1.name == zone.name:
                 if connection.zone2.zone != "blocked":
@@ -38,11 +39,13 @@ class Graph():
 
     def get_connection(self, zone1: Zone, zone2: Zone) -> Connection:
         for connection in self.connections:
-            if ((connection.zone1 == zone1
-               and connection.zone2 == zone2)
-                or (connection.zone2 == zone1
-               and connection.zone1 == zone2)):
+            if (connection.zone1 == zone1 and connection.zone2 == zone2) or (
+                connection.zone2 == zone1 and connection.zone1 == zone2
+            ):
                 return connection
+        raise LookupError(
+            f"No connection between {zone1.name} and {zone2.name}"
+        )
 
-    def set_zones_to_inf(self):
+    def set_zones_to_inf(self) -> dict[str, list[Any]]:
         return {zone.name: [float("inf"), []] for zone in self.zones.values()}

@@ -1,25 +1,27 @@
-from httpx import ConnectError
 from .graph import Graph
 from .models import (
     Connection,
     Drone,
     DroneViewState,
     SimulationViewState,
+    Zone,
 )
 from .pathfinder import Pathfinder
 
 
 class Simulation:
-    def __init__(self, graph: Graph, nb_drones: int, pathfinder: Pathfinder):
-        self.drones = []
-        self.zones = []
-        self.connections = []
+    def __init__(
+        self, graph: Graph, nb_drones: int, pathfinder: Pathfinder
+    ) -> None:
+        self.drones: list[Drone] = []
+        self.zones: list[object] = []
+        self.connections: list[Connection] = []
         self.graph = graph
         self.nb_drones = nb_drones
         self.pathfinder = pathfinder
         self.turn = 0
 
-    def load_drones(self):
+    def load_drones(self) -> None:
         self.drones = [
             Drone(
                 name=f"D{i}",
@@ -40,6 +42,7 @@ class Simulation:
                 continue
             if next_zone.zone == "restricted":
                 if drone.in_transit is True:
+                    assert isinstance(drone.current_zone, Connection)
                     connection = drone.current_zone
                     drone.in_transit = False
                     restricted_con_status.append(connection)
@@ -48,6 +51,7 @@ class Simulation:
                     drone.path_index += 1
                     movements.append(f"{drone.name}-{next_zone.name}")
                 else:
+                    assert isinstance(drone.current_zone, Zone)
                     connection = self.graph.get_connection(
                         drone.current_zone, next_zone
                     )
