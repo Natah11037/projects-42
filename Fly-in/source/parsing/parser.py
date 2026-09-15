@@ -199,11 +199,6 @@ class Parser:
                             f"'{connection}', "
                             f"line {index}."
                         )
-                    if metadata[key] > self.data["nb_drones"]:
-                        raise ValueError(
-                            "Error: Max_capacity cannot exceed nb_drones, "
-                            f"line {index}."
-                        )
                     if metadata[key] < 0:
                         raise ValueError(
                             "Error: max_link_capacity value "
@@ -243,7 +238,7 @@ class Parser:
             clean = connection.split("[")[0].strip()
             parts = set(clean.split("-"))
             for j, (index2, connection2) in enumerate(
-                self.data["co" "nnections"]
+                self.data["connections"]
             ):
                 clean2 = connection2.split("[")[0].strip()
                 if i != j and parts == set(clean2.split("-")):
@@ -336,6 +331,10 @@ class Parser:
         self, raw: str, index: int, hub_type: str = "hub"
     ) -> dict[str, Any]:
         parts = raw.split()
+        if len(parts) < 3:
+            raise ValueError(
+                f"Error: Invalid format at line {index}."
+            )
         name = parts[0]
         if raw.count("[") > 1:
             raise ValueError(
@@ -408,14 +407,8 @@ class Parser:
                             " be negative or "
                             f"zero, line {index}."
                         )
-                    if max_drones > self.data["nb_drones"]:
-                        raise ValueError(
-                            "Error: Max drones value cannot "
-                            "exceed the number of drones, "
-                            f"line {index}."
-                        )
                     if hub_type in ("start", "end"):
-                        max_drones = self.data["nb_drones"]
+                        max_drones = float("inf")
                 else:
                     raise ValueError(
                         f"Error: Invalid metadata key '{key}' "

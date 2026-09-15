@@ -8,6 +8,7 @@ import os
 
 
 def print_simulation(simulator: Simulation, graph: Graph) -> None:
+    i = 1
     while (
         len(
             set(
@@ -17,7 +18,8 @@ def print_simulation(simulator: Simulation, graph: Graph) -> None:
         )
         != 1
     ):
-        print(" ".join(simulator.moving_drones()))
+        print(f"Turn {i}: " + " ".join(simulator.moving_drones()))
+        i += 1
 
 
 if __name__ == "__main__":

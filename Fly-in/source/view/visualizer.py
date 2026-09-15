@@ -100,6 +100,7 @@ class Visualizer:
 
     def draw_sonic_zones(self) -> None:
         zones = list(self.graph.zones.values())
+        police = pygame.font.SysFont("Arial", 40, bold=True)
 
         current_time = pygame.time.get_ticks()
 
@@ -112,6 +113,8 @@ class Visualizer:
 
         for zone in zones:
 
+            text_surface = police.render(
+                f"{zone.nb_drones} / {zone.max_drones}", True, (0, 0, 0))
             image = self.zone_frames[self.zone_frame].copy()
             image.fill(
                 self._resolve_color(zone.color),
@@ -123,6 +126,9 @@ class Visualizer:
             image_rect = image.get_rect(center=(int(x), int(y)))
 
             self.window.blit(image, image_rect)
+            self.window.blit(text_surface, (
+                (x - text_surface.get_width() // 2), (
+                    y - text_surface.get_height() // 2) + 75))
 
     def set_sonic_drone_image(
         self, image_info: tuple[str, tuple[int, int]]
