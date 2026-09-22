@@ -41,14 +41,7 @@ class Simulation:
                 continue
             next_zone = drone.path[drone.path_index + 1]
             if next_zone.max_drones == next_zone.nb_drones:
-                og_type = next_zone.zone
-                next_zone.zone = "blocked"
-                path = self.pathfinder.find_path(drone.current_zone)
-                if path:
-                    drone.path = path
-                    drone.path_index = 0
-                next_zone.zone = og_type
-                next_zone = drone.path[drone.path_index + 1]
+                continue
             if next_zone.zone == "restricted":
                 if drone.in_transit is True:
                     connection = drone.current_zone
@@ -65,7 +58,7 @@ class Simulation:
 
                     if (
                         connection.nb_drones == connection.max_link_capacity
-                        or next_zone.nb_drones == next_zone.max_drones or self.check_restricted_hub_connection(next_zone) == next_zone.max_drones
+                        or next_zone.nb_drones == next_zone.max_drones
                     ):
                         # Rerouting
                         og_type = next_zone.zone
@@ -139,16 +132,3 @@ class Simulation:
         self.moving_drones()
         self.turn += 1
         return self.get_view_state()
-
-    def check_restricted_hub_connection(self, zone):
-        counter = zone.nb_drones
-        connection_list = []
-        for connection in self.graph.connections:
-            if (connection.zone1 == zone or connection.zone2 == zone):
-                connection_list.append(connection)
-        for connection in connection_list:
-            zone = connection.zone1 if connection.zone1 == zone else connection.zone2
-            for drone in self.drones:
-                if drone.current_zone == connection and drone.path[drone.path_index + 1] == zone:
-                    counter += 1
-        return counter

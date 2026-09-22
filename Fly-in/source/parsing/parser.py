@@ -66,10 +66,13 @@ class Parser:
     def _parse_ligne(
         self, line: str, i: int, index: int, exist_start: bool, exist_end: bool
     ) -> tuple[bool, bool]:
+        line = line.split(":")
+        if len(line) != 2:
+            raise ValueError(f"Error: Invalid line format, line {index}")
         if i == 0:
-            if line.startswith("nb_drones:"):
+            if line[0] == "nb_drones":
                 try:
-                    nb_drones = int(line.split(":")[1].strip())
+                    nb_drones = int(line[1].strip())
                 except ValueError:
                     raise ValueError(
                         "Error: Invalid number of drones " f", line {index}."
@@ -88,27 +91,27 @@ class Parser:
                     f"number of drones, line {index}."
                 )
         else:
-            if line.startswith("start_hub:"):
+            if line[0] == "start_hub":
                 if exist_start:
                     raise ValueError(
                         "Error: Multiple start_hub definitions "
                         f", line {index}."
                     )
-                self.data["start_hub"] = (index, line.split(":")[1].strip())
+                self.data["start_hub"] = (index, line[1].strip())
                 exist_start = True
-            elif line.startswith("end_hub:"):
+            elif line[0] == "end_hub":
                 if exist_end:
                     raise ValueError(
                         "Error: Multiple end_hub definitions "
                         f", line {index}."
                     )
-                self.data["end_hub"] = (index, line.split(":")[1].strip())
+                self.data["end_hub"] = (index, line[1].strip())
                 exist_end = True
-            elif line.startswith("hub:"):
-                self.data["hub"].append((index, line.split(":")[1].strip()))
-            elif line.startswith("connection:"):
+            elif line[0] == "hub":
+                self.data["hub"].append((index, line[1].strip()))
+            elif line[0] == "connection":
                 self.data["connections"].append(
-                    (index, line.split(":")[1].strip())
+                    (index, line[1].strip())
                 )
             else:
                 raise ValueError(f"Error: Invalid line format, line {index}")
