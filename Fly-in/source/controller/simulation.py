@@ -3,8 +3,7 @@ from .models import (
     Connection,
     Drone,
     DroneViewState,
-    SimulationViewState,
-    Zone,
+    SimulationViewState
 )
 from .pathfinder import Pathfinder
 
