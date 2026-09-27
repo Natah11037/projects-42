@@ -1,18 +1,25 @@
 import heapq
+
 from .graph import Graph
 from .models import Zone
 
 
 class Pathfinder:
-    def __init__(self, graph: Graph):
+    def __init__(self, graph: Graph) -> None:
         self.graph = graph
 
-    def find_path(self, p_start: Zone = None) -> list[Zone]:
-        start: Zone = self.graph.zones[self.graph.data["start_hub"]["name"]] if p_start is None else p_start
+    def find_path(self, p_start: Zone | None = None) -> list[Zone]:
+        start: Zone = (
+            self.graph.zones[self.graph.data["start_hub"]["name"]]
+            if p_start is None
+            else p_start
+        )
         end: str = self.graph.data["end_hub"]["name"]
-        queue: list[tuple[int, Zone]] = [(0, start)]
-        paths: dict[str, list] = self.graph.set_zones_to_inf()
-        paths[start.name] = [0, []]
+        queue: list[tuple[float, Zone]] = [(0, start)]
+        paths: dict[str, tuple[float, list[Zone]]] = {
+            zone.name: (float("inf"), []) for zone in self.graph.zones.values()
+        }
+        paths[start.name] = (0, [])
         heapq.heapify(queue)
         while queue:
             current_distance, current_zone = heapq.heappop(queue)
@@ -23,9 +30,9 @@ class Pathfinder:
             for neighbor in self.graph.get_neighbors(current_zone):
                 distance = current_distance + neighbor.get_cost()
                 if distance < paths[neighbor.name][0]:
-                    paths[neighbor.name][0] = distance
-                    paths[neighbor.name][1] = (
-                        paths[current_zone.name][1] + [current_zone]
+                    paths[neighbor.name] = (
+                        distance,
+                        paths[current_zone.name][1] + [current_zone],
                     )
                     heapq.heappush(queue, (distance, neighbor))
         return []

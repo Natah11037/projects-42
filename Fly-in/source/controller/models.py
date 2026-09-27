@@ -19,7 +19,7 @@ class SimulationViewState:
 class Zone:
     def __init__(
         self, name: str, x: int, y: int, zone: str, max_drones: int, color: str
-    ):
+    ) -> None:
         self.name = name
         self.x = x
         self.y = y
@@ -28,13 +28,13 @@ class Zone:
         self.color = color
         self.nb_drones = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.name}"
 
-    def __lt__(self, other):
+    def __lt__(self, other: "Zone") -> bool:
         return self.name < other.name
 
-    def get_cost(self):
+    def get_cost(self) -> float:
         if self.zone == "restricted":
             return 2
         elif self.zone == "blocked":
@@ -44,7 +44,9 @@ class Zone:
 
 
 class Connection:
-    def __init__(self, zone1: Zone, zone2: Zone, max_link_capacity: int):
+    def __init__(
+        self, zone1: Zone, zone2: Zone, max_link_capacity: int
+    ) -> None:
         self.zone1 = zone1
         self.zone2 = zone2
         self.max_link_capacity = max_link_capacity
@@ -55,7 +57,12 @@ class Connection:
 
 
 class Drone:
-    def __init__(self, name: str, current_zone: Zone, path: list[Zone] | None = None):
+    def __init__(
+        self,
+        name: str,
+        current_zone: Zone | Connection,
+        path: list[Zone] | None = None,
+    ) -> None:
         self.name = name
         self.current_zone = current_zone
         self.path: list[Zone] = path if path is not None else []

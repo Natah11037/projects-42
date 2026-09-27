@@ -22,6 +22,9 @@ clean:
 	@find . -type d -name __pycache__ -prune -exec rm -rf {} +
 	@rm -rf .mypy_cache .pytest_cache
 
+fclean: clean
+	@rm -rf .venv uv.lock
+
 lint:
 	@$(PYTHON) -m flake8 source --exclude=.venv
 	@$(PYTHON) -m mypy source --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs

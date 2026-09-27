@@ -1,35 +1,39 @@
-from httpx import ConnectError
 from .graph import Graph
 from .models import (
     Connection,
     Drone,
     DroneViewState,
-    SimulationViewState,
+    SimulationViewState
 )
 from .pathfinder import Pathfinder
 
 
 class Simulation:
-    def __init__(self, graph: Graph, nb_drones: int, pathfinder: Pathfinder):
-        self.drones = []
-        self.zones = []
-        self.connections = []
+    def __init__(
+        self, graph: Graph, nb_drones: int, pathfinder: Pathfinder
+    ) -> None:
+        self.drones: list[Drone] = []
+        self.zones: list[object] = []
+        self.connections: list[Connection] = []
         self.graph = graph
         self.nb_drones = nb_drones
         self.pathfinder = pathfinder
         self.turn = 0
 
-    def load_drones(self):
+    def load_drones(self) -> None:
         self.drones = [
             Drone(
-                name=f"Drone {i}",
+                name=f"D{i}",
                 current_zone=self.graph.zones[self.graph.start_hub.name],
                 path=self.pathfinder.find_path(),
             )
             for i in range(1, self.nb_drones + 1)
         ]
+        for drone in self.drones:
+            drone.current_zone.nb_drones += 1
 
-    def moving_drones(self):
+    def moving_drones(self) -> list[str]:
+        movements = []
         restricted_con_status = []
         for drone in self.drones:
             if drone.current_zone == self.graph.end_hub:
@@ -45,13 +49,15 @@ class Simulation:
                     drone.current_zone = next_zone
                     drone.current_zone.nb_drones += 1
                     drone.path_index += 1
+                    movements.append(f"{drone.name}-{next_zone.name}")
                 else:
                     connection = self.graph.get_connection(
                         drone.current_zone, next_zone
                     )
+
                     if (
                         connection.nb_drones == connection.max_link_capacity
-                        or next_zone.nb_drones >= next_zone.max_drones
+                        or next_zone.nb_drones == next_zone.max_drones
                     ):
                         # Rerouting
                         og_type = next_zone.zone
@@ -59,9 +65,9 @@ class Simulation:
                         path = self.pathfinder.find_path(drone.current_zone)
                         if path:
                             drone.path = path
-                            drone.path_index = 1
+                            drone.path_index = 0
                         next_zone.zone = og_type
-                        next_zone = drone.path[drone.path_index]
+                        next_zone = drone.path[drone.path_index + 1]
                         if next_zone.zone == "restricted":
                             connection = self.graph.get_connection(
                                 drone.current_zone, next_zone
@@ -71,21 +77,26 @@ class Simulation:
                             drone.current_zone.nb_drones -= 1
                             drone.current_zone = connection
                             connection = drone.current_zone
+                            movements.append(f"{drone.name}-{connection}")
                         else:
                             drone.current_zone = next_zone
+                            drone.path_index += 1
+                            movements.append(f"{drone.name}-{next_zone.name}")
                     else:
                         connection.nb_drones += 1
                         drone.in_transit = True
                         drone.current_zone.nb_drones -= 1
                         drone.current_zone = connection
-                        connection = drone.current_zone
+                        movements.append(f"{drone.name}-{connection}")
             else:
                 next_zone.nb_drones += 1
                 drone.current_zone.nb_drones -= 1
                 drone.current_zone = next_zone
                 drone.path_index += 1
+                movements.append(f"{drone.name}-{next_zone.name}")
         for connection in restricted_con_status:
             connection.nb_drones -= 1
+        return movements
 
     def get_view_state(self) -> SimulationViewState:
         drones = []

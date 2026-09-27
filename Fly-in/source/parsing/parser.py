@@ -1,8 +1,12 @@
-class Parser:
-    def __init__(self, map: str):
-        self.map = map
+from typing import Any
 
-    def parse(self) -> dict:
+
+class Parser:
+    def __init__(self, map: str) -> None:
+        self.map = map
+        self.data: dict[str, Any] = {}
+
+    def parse(self) -> dict[str, Any]:
         try:
             self.data = {
                 "start_hub": None,
@@ -43,7 +47,7 @@ class Parser:
             exit(1)
         return self.data
 
-    def _read_file(self):
+    def _read_file(self) -> list[tuple[int, str]]:
         try:
             with open(self.map, "r") as file:
                 lines = file.readlines()
@@ -61,11 +65,14 @@ class Parser:
 
     def _parse_ligne(
         self, line: str, i: int, index: int, exist_start: bool, exist_end: bool
-    ):
+    ) -> tuple[bool, bool]:
+        line = line.split(":")
+        if len(line) != 2:
+            raise ValueError(f"Error: Invalid line format, line {index}")
         if i == 0:
-            if line.startswith("nb_drones:"):
+            if line[0] == "nb_drones":
                 try:
-                    nb_drones = int(line.split(":")[1].strip())
+                    nb_drones = int(line[1].strip())
                 except ValueError:
                     raise ValueError(
                         "Error: Invalid number of drones " f", line {index}."
@@ -84,33 +91,33 @@ class Parser:
                     f"number of drones, line {index}."
                 )
         else:
-            if line.startswith("start_hub:"):
+            if line[0] == "start_hub":
                 if exist_start:
                     raise ValueError(
                         "Error: Multiple start_hub definitions "
                         f", line {index}."
                     )
-                self.data["start_hub"] = (index, line.split(":")[1].strip())
+                self.data["start_hub"] = (index, line[1].strip())
                 exist_start = True
-            elif line.startswith("end_hub:"):
+            elif line[0] == "end_hub":
                 if exist_end:
                     raise ValueError(
                         "Error: Multiple end_hub definitions "
                         f", line {index}."
                     )
-                self.data["end_hub"] = (index, line.split(":")[1].strip())
+                self.data["end_hub"] = (index, line[1].strip())
                 exist_end = True
-            elif line.startswith("hub:"):
-                self.data["hub"].append((index, line.split(":")[1].strip()))
-            elif line.startswith("connection:"):
+            elif line[0] == "hub":
+                self.data["hub"].append((index, line[1].strip()))
+            elif line[0] == "connection":
                 self.data["connections"].append(
-                    (index, line.split(":")[1].strip())
+                    (index, line[1].strip())
                 )
             else:
                 raise ValueError(f"Error: Invalid line format, line {index}")
         return exist_start, exist_end
 
-    def parse_connection(self):
+    def parse_connection(self) -> None:
         parsed = []
         for index, connection in self.data["connections"]:
             clean_connection = connection.split("[")[0].strip()
@@ -151,26 +158,39 @@ class Parser:
             )
         self.data["connections"] = parsed
 
-    def parse_metadata_connection(self, connection: str, index: int):
+    def parse_metadata_connection(
+        self, connection: str, index: int
+    ) -> dict[str, int]:
         if connection.count("[") > 1:
             raise ValueError(
                 "Error: Multiple metadata brackets for "
                 f"connection '{connection}', line {index}."
             )
         metadata = {}
+        seen_keys = set()
         if "[" in connection and "]" in connection:
             meta_str = connection.split("[")[1].split("]")[0]
             co = connection.split("[")[0].strip()
             parts = co.split("-")
-            if "=" in meta_str:
-                splitted_meta = meta_str.split("=", 1)
-                if len(splitted_meta) != 2:
+            if not meta_str:
+                raise ValueError(
+                    "Error: Invalid metadata format for "
+                    f"connection '{connection}', line {index}."
+                )
+            for metadata_part in meta_str.split():
+                if "=" not in metadata_part:
                     raise ValueError(
                         "Error: Invalid metadata format for "
-                        f"connection '{connection}',"
-                        f" line {index}."
+                        f"connection '{connection}', line {index}."
                     )
-                key, val = splitted_meta
+                key, val = metadata_part.split("=", 1)
+                if key in seen_keys:
+                    raise ValueError(
+                        "Error: Duplicate metadata key "
+                        f"'{key}' for connection '{connection}', "
+                        f"line {index}."
+                    )
+                seen_keys.add(key)
                 val = val.strip()
                 if key == "max_link_capacity":
                     try:
@@ -214,19 +234,14 @@ class Parser:
                         f"'{key}' for connection '{connection}', "
                         f"line {index}."
                     )
-            else:
-                raise ValueError(
-                    "Error: Invalid metadata format for "
-                    f"connection '{connection}', line {index}."
-                )
         return metadata
 
-    def parse_same_connection(self):
+    def parse_same_connection(self) -> None:
         for i, (index, connection) in enumerate(self.data["connections"]):
             clean = connection.split("[")[0].strip()
             parts = set(clean.split("-"))
             for j, (index2, connection2) in enumerate(
-                self.data["co" "nnections"]
+                self.data["connections"]
             ):
                 clean2 = connection2.split("[")[0].strip()
                 if i != j and parts == set(clean2.split("-")):
@@ -237,7 +252,7 @@ class Parser:
                         f" and {index2}."
                     )
 
-    def parse_same_name(self):
+    def parse_same_name(self) -> None:
         names = set()
         for hub in self.data["hub"]:
             if hub["name"] in names:
@@ -261,7 +276,7 @@ class Parser:
             )
         names.add(self.data["end_hub"]["name"])
 
-    def parse_name(self):
+    def parse_name(self) -> None:
         for hub in self.data["hub"]:
             if "-" in hub["name"]:
                 raise ValueError(
@@ -285,7 +300,7 @@ class Parser:
                 f" line {self.data['end_hub']['index']}."
             )
 
-    def same_coordinates(self):
+    def same_coordinates(self) -> None:
         coordinates = set()
         for hub in self.data["hub"]:
             coord = (hub["x"], hub["y"])
@@ -317,13 +332,26 @@ class Parser:
 
     def _parse_hub_raw(
         self, raw: str, index: int, hub_type: str = "hub"
-    ) -> dict:
+    ) -> dict[str, Any]:
         parts = raw.split()
+        if len(parts) < 3:
+            raise ValueError(
+                f"Error: Invalid format at line {index}."
+            )
         name = parts[0]
         if raw.count("[") > 1:
             raise ValueError(
                 "Error: Multiple metadata brackets for hub "
                 f"'{name}', line {index}."
+            )
+        metadata_parts = parts[3:]
+        if metadata_parts and (
+            not metadata_parts[0].startswith("[")
+            or not metadata_parts[-1].endswith("]")
+        ):
+            raise ValueError(
+                "Error: Metadata for hub "
+                f"'{name}' must be enclosed in brackets, line {index}."
             )
         try:
             x = int(parts[1])
@@ -337,12 +365,19 @@ class Parser:
         zone = "normal"
         is_endpoint = hub_type in ("start", "end")
         max_drones = self.data["nb_drones"] if is_endpoint else 1
+        seen_keys = set()
         for part in parts[3:]:
             part = part.strip("[]")
             if not part:
                 continue
             if "=" in part:
                 key, val = part.split("=", 1)
+                if key in seen_keys:
+                    raise ValueError(
+                        "Error: Duplicate metadata key "
+                        f"'{key}' for hub '{name}', line {index}."
+                    )
+                seen_keys.add(key)
                 if key == "color":
                     if val and val.isalpha():
                         color = val.lower()
@@ -375,12 +410,8 @@ class Parser:
                             " be negative or "
                             f"zero, line {index}."
                         )
-                    if max_drones > self.data["nb_drones"]:
-                        raise ValueError(
-                            "Error: Max drones value cannot "
-                            "exceed the number of drones, "
-                            f"line {index}."
-                        )
+                    if hub_type in ("start", "end"):
+                        max_drones = float("inf")
                 else:
                     raise ValueError(
                         f"Error: Invalid metadata key '{key}' "
@@ -401,7 +432,7 @@ class Parser:
             "index": index,
         }
 
-    def parse_hub(self):
+    def parse_hub(self) -> None:
         if self.data["start_hub"]:
             index, raw = self.data["start_hub"]
             self.data["start_hub"] = self._parse_hub_raw(raw, index, "start")
@@ -422,13 +453,19 @@ class Parser:
                 )
             names.add(hub["name"])
 
-    def parse_access_to_start_and_end(self):
+    def parse_access_to_start_and_end(self) -> None:
         if self.data["start_hub"]["zone"] == "blocked":
-            raise ValueError("Error: Start hub is in a blocked zone.")
+            raise ValueError(
+                "Error: Start hub is in a blocked zone, "
+                f"line {self.data['start_hub']['index']}."
+            )
         if self.data["end_hub"]["zone"] == "blocked":
-            raise ValueError("Error: End hub is in a blocked zone.")
+            raise ValueError(
+                "Error: End hub is in a blocked zone, "
+                f"line {self.data['end_hub']['index']}."
+            )
 
-    def can_reach_the_end(self):
+    def can_reach_the_end(self) -> bool:
         queue = [self.data["start_hub"]["name"]]
         blocked = {
             hub["name"] for hub in self.data["hub"] if hub["zone"] == "blocked"
@@ -453,7 +490,9 @@ class Parser:
                     connected.add(neighbor)
                     queue.append(neighbor)
         raise ValueError(
-            "Error: The end hub is unreachable from the start " "hub."
+            "Error: The end hub is unreachable from the start hub, "
+            f"start line {self.data['start_hub']['index']}, "
+            f"end line {self.data['end_hub']['index']}."
         )
 
 
