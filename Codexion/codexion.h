@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/09/28 16:38:42 by root             ###   ########.fr       */
+/*   Updated: 2026/09/30 16:30:43 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,30 @@
 # include "parser.h"
 # include <pthread.h>
 
-typedef struct s_coder
-{
-    int         id;
-    t_dongle    *first_dongle;
-    t_dongle    *second_dongle;
-    t_config    *config;
-    pthread_t   thread;
-} t_coder;
-
 typedef struct s_dongle
 {
     int                 id;
     pthread_mutex_t     mutex;
 } t_dongle;
 
-int test(int nb);
+typedef struct s_coder
+{
+    int             id;
+    t_dongle       *actual_dongle;
+    t_dongle       *previous_dongle;
+    t_config       *config;
+    pthread_t       thread;
+} t_coder;
+
+typedef struct s_simulation
+{
+    t_config       *config;
+    t_coder        *coders;
+    t_dongle       *dongles;
+    int             initialized_dongles;
+} t_simulation;
+
+int init_simulation(t_config *config, t_simulation *simulation);
+void destroy_simulation(t_simulation *simulation);
 
 # endif
