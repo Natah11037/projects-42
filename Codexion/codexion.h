@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/09/30 16:30:43 by root             ###   ########.fr       */
+/*   Updated: 2026/10/01 14:55:53 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,7 @@ typedef struct s_simulation
 
 int init_simulation(t_config *config, t_simulation *simulation);
 void destroy_simulation(t_simulation *simulation);
+void *test(void *arg);
+int init_thread(t_simulation simulation);
 
 # endif

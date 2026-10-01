@@ -1,22 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   codexion_2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/01 15:07:09 by root             ###   ########.fr       */
+/*   Created: 2026/10/01 14:41:03 by root              #+#    #+#             */
+/*   Updated: 2026/10/01 15:35:41 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include <pthread.h>
+#include "codexion.h"
 
-void *test(void *arg)
+int init_thread(t_simulation simulation)
 {
-    static int i;
-    
-    i++;
-    printf("arg = %d\n", i);
-    return arg;
+    int i;
+
+    i = 0;
+    while (i < simulation.config->nb_coders)
+    {
+        if (pthread_create(&simulation.coders[i].thread, NULL,
+            &test, NULL) != 0)
+            return (1);
+        i++;
+        simulation.config->created_threads = i;
+    }
+    return (0);
 }

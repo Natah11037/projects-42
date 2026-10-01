@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/09/30 16:32:03 by root             ###   ########.fr       */
+/*   Updated: 2026/10/01 15:36:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,12 @@ void destroy_simulation(t_simulation *simulation)
     int i;
 
     i = 0;
+    while (i < simulation->config->created_threads)
+    {
+        pthread_join(simulation->coders[i].thread, NULL);
+        i++;
+    }
+    i = 0;
     while (i < simulation->initialized_dongles)
     {
         pthread_mutex_destroy(&simulation->dongles[i].mutex);
@@ -86,3 +92,4 @@ void destroy_simulation(t_simulation *simulation)
     simulation->dongles = NULL;
     simulation->initialized_dongles = 0;
 }
+

@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/26 17:52:58 by root              #+#    #+#             */
-/*   Updated: 2026/09/28 15:28:45 by root             ###   ########.fr       */
+/*   Updated: 2026/10/01 15:37:50 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,5 +91,6 @@ int parser(int ac, char **av, t_config *config)
         config->scheduler = av[i];
     else
         return (print_error(ERROR_INVALID_SCHEDULER, i));
+    config->created_threads = 0;
     return (0);
 }

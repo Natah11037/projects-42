@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 13:07:10 by root              #+#    #+#             */
-/*   Updated: 2026/09/28 15:20:11 by root             ###   ########.fr       */
+/*   Updated: 2026/10/01 15:35:13 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_config
     int nb_compiles_required;
     uint64_t dongle_cooldown;
     char *scheduler;
+    int created_threads;
 } t_config;
 
 int parser(int ac, char **av, t_config *config);
