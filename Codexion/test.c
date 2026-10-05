@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/01 15:07:09 by root             ###   ########.fr       */
+/*   Updated: 2026/10/05 14:09:14 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
-void *test(void *arg)
+void	*test(void *arg)
 {
-    static int i;
-    
-    i++;
-    printf("arg = %d\n", i);
-    return arg;
+	static int	i;
+
+	i++;
+	printf("arg = %d\n", i);
+	return (arg);
 }
