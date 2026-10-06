@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/01 14:41:03 by root              #+#    #+#             */
-/*   Updated: 2026/10/05 14:01:09 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/06 14:30:44 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	init_thread(t_simulation simulation)
 	while (i < simulation.config->nb_coders)
 	{
 		if (pthread_create(&simulation.coders[i].thread, NULL,
-				&test, NULL) != 0)
+				&launch_coder_threads, &simulation.coders[i]) != 0)
 			return (1);
 		i++;
 		simulation.config->created_threads = i;

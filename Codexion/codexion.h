@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/10/05 14:09:14 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/06 14:17:16 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 # define CODEXION_H
 # include "parser.h"
 # include <pthread.h>
+# include "utils.h"
 
 typedef struct s_dongle
 {
 	int				id;
 	pthread_mutex_t	mutex;
+	t_bool			is_used;
 }	t_dongle;
 
 typedef struct s_coder
@@ -40,7 +42,10 @@ typedef struct s_simulation
 
 int		init_simulation(t_config *config, t_simulation *simulation);
 void	destroy_simulation(t_simulation *simulation);
-void	*test(void *arg);
+void	*launch_coder_threads(void *arg);
 int		init_thread(t_simulation simulation);
+t_bool	launching_compil(t_coder coder);
+t_bool	launching_debug(t_coder coder);
+t_bool	launching_refactor(t_coder coder);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/10/06 12:32:07 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/06 14:32:41 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ static int	init_dongles(t_simulation *simulation, int count)
 		if (pthread_mutex_init(&simulation->dongles[i].mutex, NULL) != 0)
 			return (1);
 		simulation->initialized_dongles++;
+		simulation->dongles[i].is_used = FALSE;
 		i++;
 	}
 	return (0);
