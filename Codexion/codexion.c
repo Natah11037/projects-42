@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/10/05 14:09:14 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/06 12:32:07 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,22 @@ static void	init_coders(t_simulation *simulation, int count)
 	i = 0;
 	while (i < count)
 	{
-		simulation->coders[i].id = i + 1;
-		simulation->coders[i].config = simulation->config;
-		simulation->coders[i].actual_dongle = &simulation->dongles[i];
-		simulation->coders[i].previous_dongle
-			= &simulation->dongles[(i + count - 1) % count];
+		if (i == count - 1)
+		{
+			simulation->coders[i].id = i + 1;
+			simulation->coders[i].config = simulation->config;
+			simulation->coders[i].actual_dongle
+				= &simulation->dongles[(i + count - 1) % count];
+			simulation->coders[i].previous_dongle = &simulation->dongles[i];
+		}
+		else
+		{
+			simulation->coders[i].id = i + 1;
+			simulation->coders[i].config = simulation->config;
+			simulation->coders[i].actual_dongle = &simulation->dongles[i];
+			simulation->coders[i].previous_dongle
+				= &simulation->dongles[(i + count - 1) % count];
+		}
 		i++;
 	}
 }
