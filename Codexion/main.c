@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 13:34:07 by root              #+#    #+#             */
-/*   Updated: 2026/10/06 14:22:48 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/09 14:49:27 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ int	main(int ac, char **av)
 	// printf("Number of compiles required: %d\n", config.nb_compiles_required);
 	// printf("Dongle cooldown: %ld\n", config.dongle_cooldown);
 	// printf("Scheduler: %s\n", config.scheduler);
-	while (i < config.nb_coders)
-	{
-		// printf("Coder %d: actual dongle %d, previous dongle %d\n",
-		// 	simulation.coders[i].id,
-		// 	simulation.coders[i].actual_dongle->id,
-		// 	simulation.coders[i].previous_dongle->id);
-		i++;
-	}
+	// while (i < config.nb_coders)
+	// {
+	// 	// printf("Coder %d: actual dongle %d, previous dongle %d\n",
+	// 	// 	simulation.coders[i].id,
+	// 	// 	simulation.coders[i].actual_dongle->id,
+	// 	// 	simulation.coders[i].previous_dongle->id);
+	// 	i++;
+	// }
 	destroy_simulation(&simulation);
 	return (0);
 }

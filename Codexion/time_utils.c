@@ -1,31 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion_2.c                                       :+:      :+:    :+:   */
+/*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/01 14:41:03 by root              #+#    #+#             */
-/*   Updated: 2026/10/09 14:46:05 by nweber--         ###   ########.fr       */
+/*   Created: 2026/10/09 11:10:47 by nweber--          #+#    #+#             */
+/*   Updated: 2026/10/09 11:15:35 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pthread.h>
+#include <sys/time.h>
 #include "codexion.h"
 
-int	init_thread(t_simulation simulation)
+uint64_t	now_ms(void)
 {
-	int	i;
+	struct timeval	time;
 
-	i = 0;
-	init_time(&simulation);
-	while (i < simulation.config->nb_coders)
-	{
-		if (pthread_create(&simulation.coders[i].thread, NULL,
-				&launch_coder_threads, &simulation.coders[i]) != 0)
-			return (1);
-		i++;
-		simulation.config->created_threads = i;
-	}
-	return (0);
+	gettimeofday(&time, NULL);
+	return ((uint64_t)time.tv_sec * 1000
+		+ (uint64_t)time.tv_usec / 1000);
 }
