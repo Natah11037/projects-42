@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/09 16:17:25 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/12 16:18:40 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,17 @@
 #include <unistd.h>
 #include "codexion.h"
 
-t_bool	checking_dongles_for_coders(t_dongle *dongle1, t_dongle *dongle2)
+static t_bool	checking_dongles_for_coders(t_coder *coder,
+		t_dongle *dongle1, t_dongle *dongle2)
 {
 	if (dongle1->id == dongle2->id)
 		return (FALSE);
 	pthread_mutex_lock(&dongle1->mutex);
 	pthread_mutex_lock(&dongle2->mutex);
-	if (dongle1->is_used == TRUE || dongle2->is_used == TRUE)
+	if (dongle1->is_used == TRUE
+		|| dongle2->is_used == TRUE
+		|| dongle1->heap.requests[0].coder != coder
+		|| dongle2->heap.requests[0].coder != coder)
 	{
 		pthread_mutex_unlock(&dongle1->mutex);
 		pthread_mutex_unlock(&dongle2->mutex);
@@ -36,10 +40,12 @@ t_bool	checking_dongles_for_coders(t_dongle *dongle1, t_dongle *dongle2)
 	return (TRUE);
 }
 
-t_bool	launching_compilation_debug_refactor(t_coder *coder)
+t_bool	launching_compilation_debug_refactor(t_coder *coder, int i)
 {
 	if (launching_compil(coder) == FALSE)
 		return (FALSE);
+	if (i + 1 == coder->config->nb_compiles_required)
+		return (TRUE);
 	if (launching_debug(coder) == FALSE)
 		return (FALSE);
 	if (launching_refactor(coder) == FALSE)
@@ -49,20 +55,28 @@ t_bool	launching_compilation_debug_refactor(t_coder *coder)
 
 void	*launch_coder_threads(void *arg)
 {
-	t_coder	*coder;
-	int		i;
+	t_request	coder_request;
+	t_coder		*coder;
+	int			i;
 
 	coder = arg;
 	i = 0;
+	coder_request.coder = coder;
 	while (coder->config->nb_compiles_required > i)
 	{
-		if (checking_dongles_for_coders(
+		if (checking_dongles_for_coders(coder,
 				coder->actual_dongle, coder->previous_dongle) == TRUE)
 		{
-			if (launching_compilation_debug_refactor(coder) == FALSE)
+			if (launching_compilation_debug_refactor(coder, i) == FALSE)
 				return (NULL);
+			i++;
+			pthread_mutex_lock(&coder->actual_dongle->mutex);
+			pthread_mutex_lock(&coder->previous_dongle->mutex);
+			heap_add_back(&coder->actual_dongle->heap, coder_request);
+			heap_add_back(&coder->previous_dongle->heap, coder_request);
+			pthread_mutex_unlock(&coder->actual_dongle->mutex);
+			pthread_mutex_unlock(&coder->previous_dongle->mutex);
 		}
-		i++;
 	}
 	return (NULL);
 }

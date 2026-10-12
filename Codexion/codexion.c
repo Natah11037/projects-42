@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/10/09 16:18:31 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/12 15:11:47 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ static int	init_dongles(t_simulation *simulation, int count)
 			return (1);
 		simulation->initialized_dongles++;
 		simulation->dongles[i].is_used = FALSE;
+		simulation->dongles[i].heap = (t_heap){0};
 		i++;
 	}
 	return (0);

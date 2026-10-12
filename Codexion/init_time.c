@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 11:19:03 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/09 14:36:52 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/12 16:10:25 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	init_time(t_simulation *simulation)
 	time = now_ms();
 	while (i < simulation->config->nb_coders)
 	{
+		simulation->dongles[i].last_time_used = 0;
 		simulation->coders[i].start_time = time;
 		simulation->coders[i].last_time_compile = time;
 		simulation->coders[i].deadline = simulation->coders[

@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/10/09 16:12:07 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/12 16:08:58 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include <pthread.h>
 # include "utils.h"
 # include <stdint.h>
+
+typedef struct s_coder	t_coder;
 
 typedef struct s_request
 {
@@ -34,6 +36,7 @@ typedef struct s_dongle
 	pthread_mutex_t	mutex;
 	t_bool			is_used;
 	t_heap			heap;
+	uint64_t		last_time_used;
 }	t_dongle;
 
 typedef struct s_coder
@@ -60,6 +63,8 @@ int			init_simulation(t_config *config, t_simulation *simulation);
 void		destroy_simulation(t_simulation *simulation);
 void		*launch_coder_threads(void *arg);
 int			init_thread(t_simulation simulation);
+void		heap_pop(t_heap *heap);
+void		heap_add_back(t_heap *heap, t_request request);
 t_bool		launching_compil(t_coder *coder);
 t_bool		launching_debug(t_coder *coder);
 t_bool		launching_refactor(t_coder *coder);
