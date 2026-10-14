@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/10/12 16:08:58 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/13 13:28:21 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void		*launch_coder_threads(void *arg);
 int			init_thread(t_simulation simulation);
 void		heap_pop(t_heap *heap);
 void		heap_add_back(t_heap *heap, t_request request);
+void		heap_add_request(t_coder *coder, t_request coder_request);
 t_bool		launching_compil(t_coder *coder);
 t_bool		launching_debug(t_coder *coder);
 t_bool		launching_refactor(t_coder *coder);

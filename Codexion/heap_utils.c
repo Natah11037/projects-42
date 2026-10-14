@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/12 15:26:28 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/12 15:52:40 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/13 13:27:21 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,14 @@ void	heap_add_back(t_heap *heap, t_request request)
 		return ;
 	}
 	heap->requests[heap->size++] = request;
+}
+
+void	heap_add_request(t_coder *coder, t_request coder_request)
+{
+	pthread_mutex_lock(&coder->actual_dongle->mutex);
+	pthread_mutex_lock(&coder->previous_dongle->mutex);
+	heap_add_back(&coder->actual_dongle->heap, coder_request);
+	heap_add_back(&coder->previous_dongle->heap, coder_request);
+	pthread_mutex_unlock(&coder->actual_dongle->mutex);
+	pthread_mutex_unlock(&coder->previous_dongle->mutex);
 }

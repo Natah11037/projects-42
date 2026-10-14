@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/12 16:18:40 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:30:28 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,22 @@ t_bool	launching_compilation_debug_refactor(t_coder *coder, int i)
 	return (TRUE);
 }
 
+static t_bool	checking_if_one_dongle(t_coder *coder)
+{
+	if (coder->config->nb_coders == 1)
+	{
+		if (now_ms() >= coder->deadline)
+		{
+			printf("%llu %d burned out\n",
+				(long long unsigned)now_ms()
+				- coder->start_time, coder->id);
+			return (FALSE);
+		}
+		usleep(1000);
+	}
+	return (TRUE);
+}
+
 void	*launch_coder_threads(void *arg)
 {
 	t_request	coder_request;
@@ -70,13 +86,10 @@ void	*launch_coder_threads(void *arg)
 			if (launching_compilation_debug_refactor(coder, i) == FALSE)
 				return (NULL);
 			i++;
-			pthread_mutex_lock(&coder->actual_dongle->mutex);
-			pthread_mutex_lock(&coder->previous_dongle->mutex);
-			heap_add_back(&coder->actual_dongle->heap, coder_request);
-			heap_add_back(&coder->previous_dongle->heap, coder_request);
-			pthread_mutex_unlock(&coder->actual_dongle->mutex);
-			pthread_mutex_unlock(&coder->previous_dongle->mutex);
+			heap_add_request(coder, coder_request);
 		}
+		if (checking_if_one_dongle(coder) == FALSE)
+			return (NULL);
 	}
 	return (NULL);
 }
