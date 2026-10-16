@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/10/13 13:28:21 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/16 13:07:30 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <pthread.h>
 # include "utils.h"
 # include <stdint.h>
+# include "monitoring.h"
 
 typedef struct s_coder	t_coder;
 
@@ -49,6 +50,7 @@ typedef struct s_coder
 	uint64_t		start_time;
 	uint64_t		last_time_compile;
 	uint64_t		deadline;
+	t_monitor		*monitor;
 }	t_coder;
 
 typedef struct s_simulation

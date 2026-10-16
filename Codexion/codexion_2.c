@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/01 14:41:03 by root              #+#    #+#             */
-/*   Updated: 2026/10/12 15:32:46 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/16 13:11:48 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,14 @@ static void	set_heaps_beginning(t_simulation *simulation)
 int	init_thread(t_simulation simulation)
 {
 	int			i;
+	t_monitor	*monitor;
 
 	i = 0;
 	set_heaps_beginning(&simulation);
 	init_time(&simulation);
 	i = 0;
+	pthread_create(&monitor->monitor_thread, NULL,
+		)
 	while (i < simulation.config->nb_coders)
 	{
 		if (pthread_create(&simulation.coders[i].thread, NULL,
