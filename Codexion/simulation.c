@@ -6,13 +6,23 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/13 14:30:28 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/19 16:15:03 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <unistd.h>
 #include "codexion.h"
+
+static int	monitor_is_running(t_monitor *monitor)
+{
+	int	running;
+
+	pthread_mutex_lock(&monitor->mutex);
+	running = (monitor->stop == FALSE);
+	pthread_mutex_unlock(&monitor->mutex);
+	return (running);
+}
 
 static t_bool	checking_dongles_for_coders(t_coder *coder,
 		t_dongle *dongle1, t_dongle *dongle2)
@@ -53,22 +63,6 @@ t_bool	launching_compilation_debug_refactor(t_coder *coder, int i)
 	return (TRUE);
 }
 
-static t_bool	checking_if_one_dongle(t_coder *coder)
-{
-	if (coder->config->nb_coders == 1)
-	{
-		if (now_ms() >= coder->deadline)
-		{
-			printf("%llu %d burned out\n",
-				(long long unsigned)now_ms()
-				- coder->start_time, coder->id);
-			return (FALSE);
-		}
-		usleep(1000);
-	}
-	return (TRUE);
-}
-
 void	*launch_coder_threads(void *arg)
 {
 	t_request	coder_request;
@@ -78,8 +72,10 @@ void	*launch_coder_threads(void *arg)
 	coder = arg;
 	i = 0;
 	coder_request.coder = coder;
-	while (coder->config->nb_compiles_required > i)
+	while (coder->config->nb_compiles_required > i
+		&& monitor_is_running(coder->monitor))
 	{
+		usleep(1);
 		if (checking_dongles_for_coders(coder,
 				coder->actual_dongle, coder->previous_dongle) == TRUE)
 		{
@@ -88,8 +84,6 @@ void	*launch_coder_threads(void *arg)
 			i++;
 			heap_add_request(coder, coder_request);
 		}
-		if (checking_if_one_dongle(coder) == FALSE)
-			return (NULL);
 	}
 	return (NULL);
 }

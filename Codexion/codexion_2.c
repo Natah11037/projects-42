@@ -39,25 +39,24 @@ static void	set_heaps_beginning(t_simulation *simulation)
 	}
 }
 
-
-int	init_thread(t_simulation simulation)
+int	init_thread(t_simulation *simulation)
 {
 	int			i;
-	t_monitor	*monitor;
 
 	i = 0;
-	set_heaps_beginning(&simulation);
-	init_time(&simulation);
-	i = 0;
-	pthread_create(&monitor->monitor_thread, NULL,
-		)
-	while (i < simulation.config->nb_coders)
+	set_heaps_beginning(simulation);
+	init_time(simulation);
+	if (pthread_create(&simulation->monitor.monitor_thread, NULL,
+			&surveillance, simulation) != 0)
+		return (1);
+	simulation->monitor_thread_created = 1;
+	while (i < simulation->config->nb_coders)
 	{
-		if (pthread_create(&simulation.coders[i].thread, NULL,
-				&launch_coder_threads, &simulation.coders[i]) != 0)
+		if (pthread_create(&simulation->coders[i].thread, NULL,
+				&launch_coder_threads, &simulation->coders[i]) != 0)
 			return (1);
 		i++;
-		simulation.config->created_threads = i;
+		simulation->config->created_threads = i;
 	}
 	return (0);
 }

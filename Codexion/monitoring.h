@@ -20,8 +20,6 @@ typedef struct s_monitor
 	pthread_t		monitor_thread;
 	t_bool			stop;
 	pthread_mutex_t	mutex;
-	pthread_mutex_t	mutex_cond;
-	pthread_cond_t	cond;
 }	t_monitor;
 
 #endif
