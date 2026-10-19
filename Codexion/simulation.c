@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/19 16:15:03 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/19 16:39:07 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,8 @@ void	*launch_coder_threads(void *arg)
 			if (launching_compilation_debug_refactor(coder, i) == FALSE)
 				return (NULL);
 			i++;
-			heap_add_request(coder, coder_request);
+			if (i < coder->config->nb_compiles_required)
+				heap_add_request(coder, coder_request);
 		}
 	}
 	return (NULL);
