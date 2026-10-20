@@ -27,15 +27,22 @@ static int	monitor_is_running(t_monitor *monitor)
 static t_bool	checking_dongles_for_coders(t_coder *coder,
 		t_dongle *dongle1, t_dongle *dongle2)
 {
+	uint64_t	current_time;
+
 	if (dongle1->id == dongle2->id)
 		return (FALSE);
 	pthread_mutex_lock(&dongle1->mutex);
 	pthread_mutex_lock(&dongle2->mutex);
+	current_time = now_ms();
 	if (dongle1->heap.size == 0 || dongle2->heap.size == 0
 		|| dongle1->is_used == TRUE
 		|| dongle2->is_used == TRUE
 		|| dongle1->heap.requests[0].coder != coder
-		|| dongle2->heap.requests[0].coder != coder)
+		|| dongle2->heap.requests[0].coder != coder
+		|| dongle1->last_time_used + coder->config->dongle_cooldown
+			> current_time
+		|| dongle2->last_time_used + coder->config->dongle_cooldown
+			> current_time)
 	{
 		pthread_mutex_unlock(&dongle1->mutex);
 		pthread_mutex_unlock(&dongle2->mutex);

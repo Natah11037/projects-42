@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/26 17:52:58 by root              #+#    #+#             */
-/*   Updated: 2026/10/09 14:57:36 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 15:13:20 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,14 @@ int	convert_to_int(char *str)
 void	save_config(int value, int i, t_config *config)
 {
 	if (i == 1)
+	{
+		if (value == 0)
+		{
+			fprintf(stderr, "Error: Invalid number of coders\n");
+			return ;
+		}
 		config->nb_coders = value;
+	}
 	else if (i == 2)
 		config->time_to_burnout = value;
 	else if (i == 3)
