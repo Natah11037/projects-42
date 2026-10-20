@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/12 15:26:28 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/19 16:59:02 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 11:52:01 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,16 @@ void	heap_pop(t_heap *heap)
 
 void	heap_add_back(t_heap *heap, t_request request)
 {
-	if (heap->size == 2)
+	if (heap->size == 1
+		&& strcmp(request.coder->config->scheduler, "edf") == 0
+		&& request.coder->deadline < heap->requests[0].coder->deadline)
 	{
-		write(1, "allez ftg", 10);
-		return ;
+		heap->requests[1] = heap->requests[0];
+		heap->requests[0] = request;
 	}
-	heap->requests[heap->size++] = request;
+	else
+		heap->requests[heap->size] = request;
+	heap->size++;
 }
 
 void	heap_add_request(t_coder *coder, t_request coder_request)

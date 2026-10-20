@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:36:53 by root              #+#    #+#             */
-/*   Updated: 2026/10/19 16:39:07 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 14:31:54 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static t_bool	checking_dongles_for_coders(t_coder *coder,
 	}
 	else
 	{
+		wait_for_dongle_cd(coder);
 		dongle1->is_used = TRUE;
 		dongle2->is_used = TRUE;
 	}
@@ -72,6 +73,7 @@ void	*launch_coder_threads(void *arg)
 	coder = arg;
 	i = 0;
 	coder_request.coder = coder;
+	pthread_mutex_lock(&coder->monitor->cond_mutex);
 	while (coder->config->nb_compiles_required > i
 		&& monitor_is_running(coder->monitor))
 	{
@@ -79,12 +81,22 @@ void	*launch_coder_threads(void *arg)
 		if (checking_dongles_for_coders(coder,
 				coder->actual_dongle, coder->previous_dongle) == TRUE)
 		{
+			pthread_mutex_unlock(&coder->monitor->cond_mutex);
 			if (launching_compilation_debug_refactor(coder, i) == FALSE)
 				return (NULL);
 			i++;
 			if (i < coder->config->nb_compiles_required)
 				heap_add_request(coder, coder_request);
 		}
+		else
+		{
+			pthread_cond_wait(&coder->monitor->cond,
+				&coder->monitor->cond_mutex);
+			pthread_mutex_unlock(&coder->monitor->cond_mutex);
+		}
+		if (monitor_is_running(coder->monitor) == FALSE)
+			break ;
 	}
+	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 	return (NULL);
 }

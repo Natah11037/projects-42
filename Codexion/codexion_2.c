@@ -27,12 +27,10 @@ static void	set_heaps_beginning(t_simulation *simulation)
 		while (simulation->config->nb_coders > i)
 		{
 			actual_coder.coder = &simulation->coders[i];
-			actual_coder.coder->actual_dongle->heap.requests[
-				actual_coder.coder->actual_dongle->heap.size] = actual_coder;
-			actual_coder.coder->previous_dongle->heap.requests[
-				actual_coder.coder->previous_dongle->heap.size] = actual_coder;
-			actual_coder.coder->actual_dongle->heap.size++;
-			actual_coder.coder->previous_dongle->heap.size++;
+			heap_add_back(&actual_coder.coder->actual_dongle->heap,
+				actual_coder);
+			heap_add_back(&actual_coder.coder->previous_dongle->heap,
+				actual_coder);
 			i += 2;
 		}
 		parity++;
@@ -44,8 +42,8 @@ int	init_thread(t_simulation *simulation)
 	int			i;
 
 	i = 0;
-	set_heaps_beginning(simulation);
 	init_time(simulation);
+	set_heaps_beginning(simulation);
 	if (pthread_create(&simulation->monitor.monitor_thread, NULL,
 			&surveillance, simulation) != 0)
 		return (1);

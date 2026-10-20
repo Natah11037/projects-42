@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 16:01:25 by root              #+#    #+#             */
-/*   Updated: 2026/10/19 14:09:07 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 13:49:23 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,6 @@ t_bool		coder_deadline_expired(t_coder *coder);
 uint64_t	now_ms(void);
 void		init_time(t_simulation *simulation);
 void		*surveillance(void *arg);
+void		wait_for_dongle_cd(t_coder *coder);
 
 #endif

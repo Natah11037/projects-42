@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 11:39:46 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/19 14:11:41 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 14:00:18 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "codexion.h"
 
-static void	wait_for_dongle_cd(t_coder *coder)
+void	wait_for_dongle_cd(t_coder *coder)
 {
 	uint64_t	current_time;
 	uint64_t	time_to_wait;
@@ -79,6 +79,9 @@ static void	release_compilation_dongles(t_coder *coder)
 	coder->actual_dongle->last_time_used = now_ms();
 	coder->previous_dongle->last_time_used
 		= coder->actual_dongle->last_time_used;
+	pthread_mutex_lock(&coder->monitor->cond_mutex);
+	pthread_cond_broadcast(&coder->monitor->cond);
+	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 	pthread_mutex_unlock(&coder->actual_dongle->mutex);
 	pthread_mutex_unlock(&coder->previous_dongle->mutex);
 }
@@ -87,7 +90,6 @@ t_bool	launching_compil(t_coder *coder)
 {
 	if (coder_deadline_expired(coder))
 		return (FALSE);
-	wait_for_dongle_cd(coder);
 	if (start_compilation(coder) == FALSE)
 		return (FALSE);
 	usleep(coder->config->time_to_compile * 1000);

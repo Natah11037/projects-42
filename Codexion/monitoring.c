@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 13:12:07 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/19 14:11:50 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 14:16:24 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	*surveillance(void *arg)
 
 	simulation = arg;
 	monitor = simulation->coders[0].monitor;
+	pthread_mutex_init(&monitor->cond_mutex, NULL);
+	pthread_cond_init(&monitor->cond, NULL);
 	while (!monitor_is_stopped(monitor))
 	{
 		expired = find_expired_coder(simulation, monitor);
@@ -65,10 +67,15 @@ void	*surveillance(void *arg)
 			printf("%llu %d burned out\n",
 				(unsigned long long)(now_ms() - expired->start_time),
 				expired->id);
+			pthread_mutex_lock(&monitor->cond_mutex);
+			pthread_cond_broadcast(&monitor->cond);
+			pthread_mutex_unlock(&monitor->cond_mutex);
 			pthread_mutex_unlock(expired->mutex_print);
 			break ;
 		}
 		usleep(100);
 	}
+	pthread_mutex_destroy(&monitor->cond_mutex);
+	pthread_cond_destroy(&monitor->cond);
 	return (NULL);
 }
