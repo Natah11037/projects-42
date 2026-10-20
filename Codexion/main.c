@@ -31,6 +31,9 @@ int	main(int ac, char **av)
 		pthread_mutex_lock(&simulation.monitor.mutex);
 		simulation.monitor.stop = TRUE;
 		pthread_mutex_unlock(&simulation.monitor.mutex);
+		pthread_mutex_lock(&simulation.monitor.cond_mutex);
+		pthread_cond_broadcast(&simulation.monitor.cond);
+		pthread_mutex_unlock(&simulation.monitor.cond_mutex);
 		destroy_simulation(&simulation);
 		return (1);
 	}

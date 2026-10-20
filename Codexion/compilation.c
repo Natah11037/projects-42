@@ -12,27 +12,36 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include "codexion.h"
 
 void	wait_for_dongle_cd(t_coder *coder)
 {
-	uint64_t	current_time;
-	uint64_t	time_to_wait;
+	struct timespec	deadline;
+	uint64_t		wake_at;
 
-	current_time = now_ms();
-	if (coder->actual_dongle->last_time_used
-		+ coder->config->dongle_cooldown <= current_time
-		&& coder->previous_dongle->last_time_used
-		+ coder->config->dongle_cooldown <= current_time)
-		return ;
-	if (coder->actual_dongle->last_time_used
-		> coder->previous_dongle->last_time_used)
-		time_to_wait = coder->actual_dongle->last_time_used
-			+ coder->config->dongle_cooldown - current_time;
+	pthread_mutex_lock(&coder->actual_dongle->mutex);
+	if (coder->actual_dongle != coder->previous_dongle)
+		pthread_mutex_lock(&coder->previous_dongle->mutex);
+	wake_at = coder->actual_dongle->last_time_used
+		+ coder->config->dongle_cooldown;
+	if (coder->previous_dongle->last_time_used
+		+ coder->config->dongle_cooldown > wake_at)
+		wake_at = coder->previous_dongle->last_time_used
+			+ coder->config->dongle_cooldown;
+	if (coder->actual_dongle != coder->previous_dongle)
+		pthread_mutex_unlock(&coder->previous_dongle->mutex);
+	pthread_mutex_unlock(&coder->actual_dongle->mutex);
+	if (wake_at <= now_ms())
+		pthread_cond_wait(&coder->monitor->cond,
+			&coder->monitor->cond_mutex);
 	else
-		time_to_wait = coder->previous_dongle->last_time_used
-			+ coder->config->dongle_cooldown - current_time;
-	usleep(time_to_wait * 1000);
+	{
+		deadline.tv_sec = wake_at / 1000;
+		deadline.tv_nsec = (wake_at % 1000) * 1000000;
+		pthread_cond_timedwait(&coder->monitor->cond,
+			&coder->monitor->cond_mutex, &deadline);
+	}
 }
 
 static void	print_compilation_start(t_coder *coder)
@@ -70,6 +79,7 @@ static t_bool	start_compilation(t_coder *coder)
 
 static void	release_compilation_dongles(t_coder *coder)
 {
+	pthread_mutex_lock(&coder->monitor->cond_mutex);
 	pthread_mutex_lock(&coder->actual_dongle->mutex);
 	pthread_mutex_lock(&coder->previous_dongle->mutex);
 	heap_pop(&coder->actual_dongle->heap);
@@ -79,11 +89,10 @@ static void	release_compilation_dongles(t_coder *coder)
 	coder->actual_dongle->last_time_used = now_ms();
 	coder->previous_dongle->last_time_used
 		= coder->actual_dongle->last_time_used;
-	pthread_mutex_lock(&coder->monitor->cond_mutex);
 	pthread_cond_broadcast(&coder->monitor->cond);
-	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 	pthread_mutex_unlock(&coder->actual_dongle->mutex);
 	pthread_mutex_unlock(&coder->previous_dongle->mutex);
+	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 }
 
 t_bool	launching_compil(t_coder *coder)

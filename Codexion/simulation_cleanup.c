@@ -51,6 +51,16 @@ static void	destroy_simulation_mutexes(t_simulation *simulation)
 		pthread_mutex_destroy(&simulation->monitor.mutex);
 		simulation->monitor_mutex_initialized = 0;
 	}
+	if (simulation->monitor_cond_initialized)
+	{
+		pthread_cond_destroy(&simulation->monitor.cond);
+		simulation->monitor_cond_initialized = 0;
+	}
+	if (simulation->monitor_cond_mutex_initialized)
+	{
+		pthread_mutex_destroy(&simulation->monitor.cond_mutex);
+		simulation->monitor_cond_mutex_initialized = 0;
+	}
 	if (simulation->print_mutex_initialized)
 	{
 		pthread_mutex_destroy(&simulation->mutex_print);

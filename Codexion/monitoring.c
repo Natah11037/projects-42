@@ -56,8 +56,6 @@ void	*surveillance(void *arg)
 
 	simulation = arg;
 	monitor = simulation->coders[0].monitor;
-	pthread_mutex_init(&monitor->cond_mutex, NULL);
-	pthread_cond_init(&monitor->cond, NULL);
 	while (!monitor_is_stopped(monitor))
 	{
 		expired = find_expired_coder(simulation, monitor);
@@ -75,7 +73,5 @@ void	*surveillance(void *arg)
 		}
 		usleep(100);
 	}
-	pthread_mutex_destroy(&monitor->cond_mutex);
-	pthread_cond_destroy(&monitor->cond);
 	return (NULL);
 }

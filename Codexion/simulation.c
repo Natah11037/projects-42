@@ -31,7 +31,8 @@ static t_bool	checking_dongles_for_coders(t_coder *coder,
 		return (FALSE);
 	pthread_mutex_lock(&dongle1->mutex);
 	pthread_mutex_lock(&dongle2->mutex);
-	if (dongle1->is_used == TRUE
+	if (dongle1->heap.size == 0 || dongle2->heap.size == 0
+		|| dongle1->is_used == TRUE
 		|| dongle2->is_used == TRUE
 		|| dongle1->heap.requests[0].coder != coder
 		|| dongle2->heap.requests[0].coder != coder)
@@ -40,12 +41,8 @@ static t_bool	checking_dongles_for_coders(t_coder *coder,
 		pthread_mutex_unlock(&dongle2->mutex);
 		return (FALSE);
 	}
-	else
-	{
-		wait_for_dongle_cd(coder);
-		dongle1->is_used = TRUE;
-		dongle2->is_used = TRUE;
-	}
+	dongle1->is_used = TRUE;
+	dongle2->is_used = TRUE;
 	pthread_mutex_unlock(&dongle1->mutex);
 	pthread_mutex_unlock(&dongle2->mutex);
 	return (TRUE);
@@ -73,30 +70,25 @@ void	*launch_coder_threads(void *arg)
 	coder = arg;
 	i = 0;
 	coder_request.coder = coder;
-	pthread_mutex_lock(&coder->monitor->cond_mutex);
 	while (coder->config->nb_compiles_required > i
 		&& monitor_is_running(coder->monitor))
 	{
-		usleep(1);
-		if (checking_dongles_for_coders(coder,
-				coder->actual_dongle, coder->previous_dongle) == TRUE)
-		{
-			pthread_mutex_unlock(&coder->monitor->cond_mutex);
-			if (launching_compilation_debug_refactor(coder, i) == FALSE)
-				return (NULL);
-			i++;
-			if (i < coder->config->nb_compiles_required)
-				heap_add_request(coder, coder_request);
-		}
-		else
-		{
-			pthread_cond_wait(&coder->monitor->cond,
-				&coder->monitor->cond_mutex);
-			pthread_mutex_unlock(&coder->monitor->cond_mutex);
-		}
+		pthread_mutex_lock(&coder->monitor->cond_mutex);
+		while (monitor_is_running(coder->monitor)
+			&& checking_dongles_for_coders(coder,
+				coder->actual_dongle, coder->previous_dongle) == FALSE)
+			wait_for_dongle_cd(coder);
 		if (monitor_is_running(coder->monitor) == FALSE)
+		{
+			pthread_mutex_unlock(&coder->monitor->cond_mutex);
 			break ;
+		}
+		pthread_mutex_unlock(&coder->monitor->cond_mutex);
+		if (launching_compilation_debug_refactor(coder, i) == FALSE)
+			return (NULL);
+		i++;
+		if (i < coder->config->nb_compiles_required)
+			heap_add_request(coder, coder_request);
 	}
-	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 	return (NULL);
 }

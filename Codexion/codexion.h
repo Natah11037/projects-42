@@ -22,7 +22,8 @@ typedef struct s_coder	t_coder;
 
 typedef struct s_request
 {
-	t_coder	*coder;
+	t_coder		*coder;
+	uint64_t	deadline;
 }	t_request;
 
 typedef struct s_heap
@@ -63,6 +64,8 @@ typedef struct s_simulation
 	pthread_mutex_t	mutex_print;
 	int				initialized_dongles;
 	int				monitor_mutex_initialized;
+	int				monitor_cond_initialized;
+	int				monitor_cond_mutex_initialized;
 	int				print_mutex_initialized;
 	int				monitor_thread_created;
 }	t_simulation;

@@ -27,6 +27,7 @@ static void	set_heaps_beginning(t_simulation *simulation)
 		while (simulation->config->nb_coders > i)
 		{
 			actual_coder.coder = &simulation->coders[i];
+			actual_coder.deadline = actual_coder.coder->deadline;
 			heap_add_back(&actual_coder.coder->actual_dongle->heap,
 				actual_coder);
 			heap_add_back(&actual_coder.coder->previous_dongle->heap,

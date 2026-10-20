@@ -26,7 +26,7 @@ void	heap_add_back(t_heap *heap, t_request request)
 {
 	if (heap->size == 1
 		&& strcmp(request.coder->config->scheduler, "edf") == 0
-		&& request.coder->deadline < heap->requests[0].coder->deadline)
+		&& request.deadline < heap->requests[0].deadline)
 	{
 		heap->requests[1] = heap->requests[0];
 		heap->requests[0] = request;
@@ -38,10 +38,16 @@ void	heap_add_back(t_heap *heap, t_request request)
 
 void	heap_add_request(t_coder *coder, t_request coder_request)
 {
+	pthread_mutex_lock(&coder->monitor->cond_mutex);
+	pthread_mutex_lock(&coder->monitor->mutex);
+	coder_request.deadline = coder->deadline;
+	pthread_mutex_unlock(&coder->monitor->mutex);
 	pthread_mutex_lock(&coder->actual_dongle->mutex);
 	pthread_mutex_lock(&coder->previous_dongle->mutex);
 	heap_add_back(&coder->actual_dongle->heap, coder_request);
 	heap_add_back(&coder->previous_dongle->heap, coder_request);
-	pthread_mutex_unlock(&coder->actual_dongle->mutex);
 	pthread_mutex_unlock(&coder->previous_dongle->mutex);
+	pthread_mutex_unlock(&coder->actual_dongle->mutex);
+	pthread_cond_broadcast(&coder->monitor->cond);
+	pthread_mutex_unlock(&coder->monitor->cond_mutex);
 }

@@ -20,6 +20,8 @@ static int	allocate_simulation(t_config *config, t_simulation *simulation)
 	simulation->dongles = NULL;
 	simulation->initialized_dongles = 0;
 	simulation->monitor_mutex_initialized = 0;
+	simulation->monitor_cond_initialized = 0;
+	simulation->monitor_cond_mutex_initialized = 0;
 	simulation->print_mutex_initialized = 0;
 	simulation->monitor_thread_created = 0;
 	simulation->coders = malloc(sizeof(t_coder) * config->nb_coders);
@@ -31,6 +33,12 @@ static int	allocate_simulation(t_config *config, t_simulation *simulation)
 	if (pthread_mutex_init(&simulation->monitor.mutex, NULL) != 0)
 		return (1);
 	simulation->monitor_mutex_initialized = 1;
+	if (pthread_mutex_init(&simulation->monitor.cond_mutex, NULL) != 0)
+		return (1);
+	simulation->monitor_cond_mutex_initialized = 1;
+	if (pthread_cond_init(&simulation->monitor.cond, NULL) != 0)
+		return (1);
+	simulation->monitor_cond_initialized = 1;
 	if (pthread_mutex_init(&simulation->mutex_print, NULL) != 0)
 		return (1);
 	simulation->print_mutex_initialized = 1;
