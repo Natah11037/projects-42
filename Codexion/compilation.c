@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 11:39:46 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/20 14:00:18 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/20 15:07:00 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ void	wait_for_dongle_cd(t_coder *coder)
 static void	print_compilation_start(t_coder *coder)
 {
 	pthread_mutex_lock(coder->mutex_print);
-	printf("%llu %d has taken dongle\n",
+	printf("%llu %d has taken a dongle\n",
 		(long long unsigned)coder->last_time_compile - coder->start_time,
 		coder->id);
-	printf("%llu %d has taken dongle\n",
+	printf("%llu %d has taken a dongle\n",
 		(long long unsigned)coder->last_time_compile - coder->start_time,
 		coder->id);
 	printf("%llu %d is compiling\n",
