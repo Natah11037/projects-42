@@ -6,13 +6,14 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/26 17:52:58 by root              #+#    #+#             */
-/*   Updated: 2026/10/21 12:48:20 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 13:54:38 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "parser.h"
 #include "error.h"
+#include "utils.h"
 
 int	verify_if_valid_int(char *str)
 {
@@ -50,14 +51,14 @@ int	convert_to_int(char *str)
 	return ((int)result);
 }
 
-void	save_config(int value, int i, t_config *config)
+t_bool	save_config(int value, int i, t_config *config)
 {
 	if (i == 1)
 	{
 		if (value == 0)
 		{
 			fprintf(stderr, "Error: Invalid number of coders\n");
-			return ;
+			return (FALSE);
 		}
 		config->nb_coders = value;
 	}
@@ -73,6 +74,7 @@ void	save_config(int value, int i, t_config *config)
 		config->nb_compiles_required = value;
 	else if (i == 7)
 		config->dongle_cooldown = value;
+	return (TRUE);
 }
 
 int	parser(int ac, char **av, t_config *config)
@@ -87,9 +89,10 @@ int	parser(int ac, char **av, t_config *config)
 		if (verify_if_valid_int(av[i]) == -1)
 			return (print_error(ERROR_INVALID_ARG, i));
 		value = convert_to_int(av[i]);
-		if (value == -1)
+		if (value == FALSE)
 			return (1);
-		save_config(value, i, config);
+		if (save_config(value, i, config) == FALSE)
+			return (1);
 		i++;
 	}
 	if (strcmp(av[i], "fifo") == 0 || strcmp(av[i], "edf") == 0)

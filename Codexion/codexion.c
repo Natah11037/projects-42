@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/10/21 12:58:36 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 13:22:35 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ static int	allocate_simulation(t_config *config, t_simulation *simulation)
 	simulation->print_mutex_initialized = 0;
 	simulation->monitor_thread_created = 0;
 	simulation->coders = malloc(sizeof(t_coder) * config->nb_coders);
-	simulation->print_mutex_initialized = 1;
-	simulation->monitor.stop = FALSE;
 	if (check_for_alloc_simulation(config, simulation) != 0)
 		return (1);
+	simulation->print_mutex_initialized = 1;
+	simulation->monitor.stop = FALSE;
 	return (0);
 }
 
