@@ -73,6 +73,7 @@ typedef struct s_simulation
 int			init_simulation(t_config *config, t_simulation *simulation);
 void		initialize_coders(t_simulation *simulation, int count);
 void		destroy_simulation(t_simulation *simulation);
+void		check_to_destroy_simulation(t_simulation *simulation);
 void		*launch_coder_threads(void *arg);
 int			init_thread(t_simulation *simulation);
 void		heap_pop(t_heap *heap);

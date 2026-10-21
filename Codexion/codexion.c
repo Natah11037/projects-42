@@ -6,25 +6,16 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/30 15:34:36 by root              #+#    #+#             */
-/*   Updated: 2026/10/19 14:03:31 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 12:58:36 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 #include <stdlib.h>
 
-static int	allocate_simulation(t_config *config, t_simulation *simulation)
+static int	check_for_alloc_simulation(
+		t_config *config, t_simulation *simulation)
 {
-	simulation->config = config;
-	simulation->coders = NULL;
-	simulation->dongles = NULL;
-	simulation->initialized_dongles = 0;
-	simulation->monitor_mutex_initialized = 0;
-	simulation->monitor_cond_initialized = 0;
-	simulation->monitor_cond_mutex_initialized = 0;
-	simulation->print_mutex_initialized = 0;
-	simulation->monitor_thread_created = 0;
-	simulation->coders = malloc(sizeof(t_coder) * config->nb_coders);
 	if (!simulation->coders)
 		return (1);
 	simulation->dongles = malloc(sizeof(t_dongle) * config->nb_coders);
@@ -41,8 +32,25 @@ static int	allocate_simulation(t_config *config, t_simulation *simulation)
 	simulation->monitor_cond_initialized = 1;
 	if (pthread_mutex_init(&simulation->mutex_print, NULL) != 0)
 		return (1);
+	return (0);
+}
+
+static int	allocate_simulation(t_config *config, t_simulation *simulation)
+{
+	simulation->config = config;
+	simulation->coders = NULL;
+	simulation->dongles = NULL;
+	simulation->initialized_dongles = 0;
+	simulation->monitor_mutex_initialized = 0;
+	simulation->monitor_cond_initialized = 0;
+	simulation->monitor_cond_mutex_initialized = 0;
+	simulation->print_mutex_initialized = 0;
+	simulation->monitor_thread_created = 0;
+	simulation->coders = malloc(sizeof(t_coder) * config->nb_coders);
 	simulation->print_mutex_initialized = 1;
 	simulation->monitor.stop = FALSE;
+	if (check_for_alloc_simulation(config, simulation) != 0)
+		return (1);
 	return (0);
 }
 

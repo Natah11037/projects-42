@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 11:39:46 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/19 13:52:18 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 13:07:30 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,26 +46,7 @@ static void	destroy_simulation_mutexes(t_simulation *simulation)
 		pthread_mutex_destroy(&simulation->dongles[i].mutex);
 		i++;
 	}
-	if (simulation->monitor_mutex_initialized)
-	{
-		pthread_mutex_destroy(&simulation->monitor.mutex);
-		simulation->monitor_mutex_initialized = 0;
-	}
-	if (simulation->monitor_cond_initialized)
-	{
-		pthread_cond_destroy(&simulation->monitor.cond);
-		simulation->monitor_cond_initialized = 0;
-	}
-	if (simulation->monitor_cond_mutex_initialized)
-	{
-		pthread_mutex_destroy(&simulation->monitor.cond_mutex);
-		simulation->monitor_cond_mutex_initialized = 0;
-	}
-	if (simulation->print_mutex_initialized)
-	{
-		pthread_mutex_destroy(&simulation->mutex_print);
-		simulation->print_mutex_initialized = 0;
-	}
+	check_to_destroy_simulation(simulation);
 }
 
 static void	free_simulation_arrays(t_simulation *simulation)

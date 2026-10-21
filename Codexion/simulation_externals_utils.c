@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/06 14:07:01 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/19 14:12:00 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 13:07:18 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,28 @@ t_bool	launching_refactor(t_coder *coder)
 	pthread_mutex_unlock(coder->mutex_print);
 	usleep(coder->config->time_to_refactor * 1000);
 	return (coder_monitor_is_running(coder->monitor));
+}
+
+void	check_to_destroy_simulation(t_simulation *simulation)
+{
+	if (simulation->monitor_mutex_initialized)
+	{
+		pthread_mutex_destroy(&simulation->monitor.mutex);
+		simulation->monitor_mutex_initialized = 0;
+	}
+	if (simulation->monitor_cond_initialized)
+	{
+		pthread_cond_destroy(&simulation->monitor.cond);
+		simulation->monitor_cond_initialized = 0;
+	}
+	if (simulation->monitor_cond_mutex_initialized)
+	{
+		pthread_mutex_destroy(&simulation->monitor.cond_mutex);
+		simulation->monitor_cond_mutex_initialized = 0;
+	}
+	if (simulation->print_mutex_initialized)
+	{
+		pthread_mutex_destroy(&simulation->mutex_print);
+		simulation->print_mutex_initialized = 0;
+	}
 }
