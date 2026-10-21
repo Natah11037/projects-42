@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/06 14:07:01 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/21 13:07:18 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 13:14:10 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_bool	coder_deadline_expired(t_coder *coder)
 
 t_bool	launching_debug(t_coder *coder)
 {
-	if (!coder_monitor_is_running(coder->monitor)
+	if (coder_monitor_is_running(coder->monitor) == FALSE
 		|| coder_deadline_expired(coder))
 		return (FALSE);
 	pthread_mutex_lock(coder->mutex_print);
@@ -49,7 +49,7 @@ t_bool	launching_debug(t_coder *coder)
 
 t_bool	launching_refactor(t_coder *coder)
 {
-	if (!coder_monitor_is_running(coder->monitor)
+	if (coder_monitor_is_running(coder->monitor) == FALSE
 		|| coder_deadline_expired(coder))
 		return (FALSE);
 	pthread_mutex_lock(coder->mutex_print);
