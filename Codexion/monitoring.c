@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 13:12:07 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/20 14:16:24 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 15:30:12 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static t_coder	*find_expired_coder(t_simulation *simulation,
 	return (expired);
 }
 
-static t_bool	monitor_is_stopped(t_monitor *monitor)
+t_bool	monitor_is_stopped(t_monitor *monitor)
 {
 	t_bool	stopped;
 

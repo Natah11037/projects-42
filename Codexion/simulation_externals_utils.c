@@ -6,7 +6,7 @@
 /*   By: nweber-- <nweber--@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/06 14:07:01 by nweber--          #+#    #+#             */
-/*   Updated: 2026/10/21 13:14:10 by nweber--         ###   ########.fr       */
+/*   Updated: 2026/10/21 15:29:03 by nweber--         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,11 @@ t_bool	launching_debug(t_coder *coder)
 		|| coder_deadline_expired(coder))
 		return (FALSE);
 	pthread_mutex_lock(coder->mutex_print);
+	if (monitor_is_stopped(coder->monitor))
+	{
+		pthread_mutex_unlock(coder->mutex_print);
+		return (FALSE);
+	}
 	printf("%llu %d is debugging\n",
 		(long long unsigned)now_ms() - coder->start_time, coder->id);
 	pthread_mutex_unlock(coder->mutex_print);
@@ -53,6 +58,11 @@ t_bool	launching_refactor(t_coder *coder)
 		|| coder_deadline_expired(coder))
 		return (FALSE);
 	pthread_mutex_lock(coder->mutex_print);
+	if (monitor_is_stopped(coder->monitor))
+	{
+		pthread_mutex_unlock(coder->mutex_print);
+		return (FALSE);
+	}
 	printf("%llu %d is refactoring\n",
 		(long long unsigned)now_ms() - coder->start_time, coder->id);
 	pthread_mutex_unlock(coder->mutex_print);
