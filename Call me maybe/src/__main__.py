@@ -19,19 +19,16 @@ def main() -> None:
     model = Small_LLM_Model()
     builder = ContextBuilder(functions=functions)
     argument_selector = Argument_selector()
-    choices_functions = []
     answer = {}
     for prompt in prompts:
         context = builder.build_function_selection_context(prompt)
-        choices_functions.append(selector.choose_id(context, model))
-
-        for function in choices_functions:
-            context_arg = builder.build_argument_context(prompt, function)
-            args = argument_selector.choose_argument(model, context_arg)
-            answer[function.name] = function
-            answer["parameter"] = args
-        print("function: "
-              f"{answer[function.name]}/n parameter: {answer['parameter']}")
+        function = selector.choose_id(context, model)
+        context_arg = builder.build_argument_context(prompt, function)
+        args = argument_selector.choose_argument(model, context_arg)
+        answer[function.name] = function.name
+        answer["parameter"] = args
+        print(f"Prompt: {prompt.prompt}\nfunction: "
+              f"{answer[function.name]}\nparameter: {answer['parameter']}")
 
 
 if __name__ == "__main__":
