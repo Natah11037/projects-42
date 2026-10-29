@@ -61,7 +61,7 @@ class ContextBuilder(BaseModel):
             "<|im_start|>assistant\n"
             "<think>\n\n</think>\n\n"
             "<tool_call>\n"
-            '{"name": "'
+            '{"name":"'
         )
 
     def build_argument_context(
