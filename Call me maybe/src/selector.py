@@ -64,11 +64,46 @@ class ArgumentSelector(BaseModel):
             raise ValueError("Vocabulary has no valid token IDs")
         return tuple(sorted(ids))
 
+    def __string_status(self,
+                        model: Small_LLM_Model,
+                        potential_answer: list[int],
+                        is_integer: bool = False) -> str:
+        str_potential_answer = model.decode(potential_answer)
+        if str_potential_answer.startswith('"')
+
     def __string(self,
                  model: Small_LLM_Model,
                  context_ids: list[int],
                  is_integer: bool = False) -> str:
-        ...
+        answer = model.encode('"')[0].tolist()
+        allowed_ids = self.__vocabulary_ids(
+            model.get_path_to_vocab_file()
+        )
+        for _ in range(256):
+            logits = model.get_logits_from_input_ids(
+                context_ids + answer
+            )
+            candidates = [
+                (-logits[token_id], token_id)
+                for token_id in allowed_ids
+                if token_id < len(logits)
+                and math.isfinite(logits[token_id])
+            ]
+            heapq.heapify(candidates)
+            while candidates:
+                _, next_token_id = heapq.heappop(candidates)
+                potential_answer = answer + [next_token_id]
+                if self.__string_status(model, potential_answer,
+                                        is_integer) in (-1, 0):
+                    answer = potential_answer
+                    break
+            if answer != [] and model.decode(answer)[-1] in ',}\n':
+                str_answer = model.decode(answer)
+                if "," in str_answer:
+                    str_answer = str_answer[:-1]
+                else:
+                    str_answer = str_answer[:-3]
+                break
 
     def __number_and_integer_status(self,
                                     model: Small_LLM_Model,
