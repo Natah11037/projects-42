@@ -92,5 +92,5 @@ class ContextBuilder(BaseModel):
             "<tool_call>\n"
             '{"name": '
             f'{json.dumps(function.name)}, '
-            '"arguments": {'
+            '"arguments": '
         )

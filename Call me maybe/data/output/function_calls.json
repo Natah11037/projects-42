@@ -1,0 +1,9 @@
+[
+    {
+        "prompt": "Calculate the square root of 144",
+        "name": "fn_get_square_root",
+        "parameters": {
+            "a": true
+        }
+    }
+]

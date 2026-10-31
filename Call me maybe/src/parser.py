@@ -1,6 +1,5 @@
 import json
 from typing import Any
-
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -22,13 +21,14 @@ class Prompt(BaseModel):
     prompt: str = Field(min_length=1)
 
 
-class Function_call(BaseModel):
+class FunctionCall(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    prompt: str
     name: str
-    parameters: dict[str, Type]
+    parameters: dict[str, Any]
 
 
-class loading(BaseModel):
+class Loading(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     def load(self, file_path: str) -> list[dict[str, Any]]:
