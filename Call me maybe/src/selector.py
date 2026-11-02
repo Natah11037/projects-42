@@ -96,23 +96,17 @@ class ArgumentSelector(BaseModel):
                         potential_answer: list[int],
                         is_integer: bool = False) -> int:
         str_potential_answer = model.decode(potential_answer)
-        if not str_potential_answer.startswith('"'):
-            return -2
-
-        if str_potential_answer.endswith((",", "}", "\n")):
-            try:
-                value = json.loads(str_potential_answer[:-1])
-            except json.JSONDecodeError:
-                return -2
-            return 0 if isinstance(value, str) else -2
-
-        if str_potential_answer.endswith('"'):
-            try:
-                value = json.loads(str_potential_answer)
-            except json.JSONDecodeError:
-                return -2
-            return -1 if isinstance(value, str) else -2
-
+        for i, char in enumerate(str_potential_answer):
+            if i == 0:
+                if char != '"':
+                    return -2
+                else:
+                    continue
+            else:
+                if char == '"' and str_potential_answer[i - 1] != '\\':
+                    return 0
+                else:
+                    continue
         return -1
 
     def __string(self,
@@ -137,23 +131,22 @@ class ArgumentSelector(BaseModel):
             while candidates:
                 _, next_token_id = heapq.heappop(candidates)
                 potential_answer = answer + [next_token_id]
-                if self.__string_status(model, potential_answer,
-                                        is_integer) in (-1, 0):
+                status = self.__string_status(model, potential_answer,
+                                              is_integer)
+                if status in (-1, 0):
                     answer = potential_answer
                     break
             str_answer = model.decode(answer)
-            if str_answer.endswith((",", "}", "\n")):
-                try:
-                    value = json.loads(str_answer[:-1])
-                except json.JSONDecodeError as error:
-                    raise ValueError(
-                        f"Generated string is not valid JSON: {str_answer!r}"
-                    ) from error
-                if not isinstance(value, str):
-                    raise ValueError("Generated argument is not a JSON string")
-                return value
-
-        raise RuntimeError("Could not complete string argument generation")
+            if status == 0:
+                while str_answer[-1] != '"':
+                    str_answer = str_answer[:-1]
+                break
+        try:
+            return json.loads(str_answer)
+        except json.JSONDecodeError as error:
+            raise ValueError(
+                f"Generated string is not valid JSON: {str_answer!r}"
+            ) from error
 
     def __number_and_integer_status(self,
                                     model: Small_LLM_Model,
